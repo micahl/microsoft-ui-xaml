@@ -9,12 +9,12 @@ class TabViewProperties
 public:
     TabViewProperties();
 
-    void Placeholder(winrt::IInspectable const& value);
-    winrt::IInspectable Placeholder();
+    void TabWidthMode(winrt::TabViewWidthMode const& value);
+    winrt::TabViewWidthMode TabWidthMode();
 
-    static winrt::DependencyProperty PlaceholderProperty() { return s_PlaceholderProperty; }
+    static winrt::DependencyProperty TabWidthModeProperty() { return s_TabWidthModeProperty; }
 
-    static GlobalDependencyProperty s_PlaceholderProperty;
+    static GlobalDependencyProperty s_TabWidthModeProperty;
 
     static void EnsureProperties();
     static void ClearProperties();

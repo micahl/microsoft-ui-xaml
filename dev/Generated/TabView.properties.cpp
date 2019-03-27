@@ -8,7 +8,7 @@
 
 CppWinRTActivatableClassWithDPFactory(TabView)
 
-GlobalDependencyProperty TabViewProperties::s_PlaceholderProperty{ nullptr };
+GlobalDependencyProperty TabViewProperties::s_TabWidthModeProperty{ nullptr };
 
 TabViewProperties::TabViewProperties()
 {
@@ -17,22 +17,22 @@ TabViewProperties::TabViewProperties()
 
 void TabViewProperties::EnsureProperties()
 {
-    if (!s_PlaceholderProperty)
+    if (!s_TabWidthModeProperty)
     {
-        s_PlaceholderProperty =
+        s_TabWidthModeProperty =
             InitializeDependencyProperty(
-                L"Placeholder",
-                winrt::name_of<winrt::IInspectable>(),
+                L"TabWidthMode",
+                winrt::name_of<winrt::TabViewWidthMode>(),
                 winrt::name_of<winrt::TabView>(),
                 false /* isAttached */,
-                ValueHelper<winrt::IInspectable>::BoxedDefaultValue(),
+                ValueHelper<winrt::TabViewWidthMode>::BoxValueIfNecessary(winrt::TabViewWidthMode::SizeToContent),
                 winrt::PropertyChangedCallback(&OnPropertyChanged));
     }
 }
 
 void TabViewProperties::ClearProperties()
 {
-    s_PlaceholderProperty = nullptr;
+    s_TabWidthModeProperty = nullptr;
 }
 
 void TabViewProperties::OnPropertyChanged(
@@ -43,12 +43,12 @@ void TabViewProperties::OnPropertyChanged(
     winrt::get_self<TabView>(owner)->OnPropertyChanged(args);
 }
 
-void TabViewProperties::Placeholder(winrt::IInspectable const& value)
+void TabViewProperties::TabWidthMode(winrt::TabViewWidthMode const& value)
 {
-    static_cast<TabView*>(this)->SetValue(s_PlaceholderProperty, ValueHelper<winrt::IInspectable>::BoxValueIfNecessary(value));
+    static_cast<TabView*>(this)->SetValue(s_TabWidthModeProperty, ValueHelper<winrt::TabViewWidthMode>::BoxValueIfNecessary(value));
 }
 
-winrt::IInspectable TabViewProperties::Placeholder()
+winrt::TabViewWidthMode TabViewProperties::TabWidthMode()
 {
-    return ValueHelper<winrt::IInspectable>::CastOrUnbox(static_cast<TabView*>(this)->GetValue(s_PlaceholderProperty));
+    return ValueHelper<winrt::TabViewWidthMode>::CastOrUnbox(static_cast<TabView*>(this)->GetValue(s_TabWidthModeProperty));
 }

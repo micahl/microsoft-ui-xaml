@@ -617,8 +617,9 @@ namespace CustomTasks
 
             IncludedTypesMetadata["TabView"] = true;
             // TabView -- NeedsPropChangedCallbackMetadata
-            NeedsPropChangedCallbackMetadata["TabView.Placeholder"] = true;
+            NeedsPropChangedCallbackMetadata["TabView.TabWidthMode"] = true;
             // TabView -- DefaultValueMetadata
+            DefaultValueMetadata["TabView.TabWidthMode"] = @"winrt::TabViewWidthMode::SizeToContent";
 
             IncludedTypesMetadata["TabViewItem"] = true;
             // TabViewItem -- NeedsPropChangedCallbackMetadata

@@ -12,7 +12,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel Orientation="Vertical">
-            <controls:TabView>
+            <controls:TabView TabWidthMode="Fixed">
                 <controls:TabView.Items>
 
                     <controls:TabViewItem Icon="Home" Header="Home">
@@ -25,6 +25,14 @@
 
                     <controls:TabViewItem Icon="Emoji" Header="Emoji">
                         <TextBlock Padding="16">Emoji text</TextBlock>
+                    </controls:TabViewItem>
+
+                    <controls:TabViewItem Icon="Audio" Header="A somewhat longer header than usual">
+                        <TextBlock Padding="16">Long name text</TextBlock>
+                    </controls:TabViewItem>
+
+                    <controls:TabViewItem Icon="Video" Header="Video">
+                        <TextBlock Padding="16">Video text</TextBlock>
                     </controls:TabViewItem>
 
                 </controls:TabView.Items>
