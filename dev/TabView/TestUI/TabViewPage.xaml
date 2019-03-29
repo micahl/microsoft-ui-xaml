@@ -31,7 +31,23 @@
                         <TextBlock Padding="16">Long name text</TextBlock>
                     </controls:TabViewItem>
 
-                    <controls:TabViewItem Icon="Video" Header="Video">
+                    <controls:TabViewItem Icon="Video" Header="1">
+                        <TextBlock Padding="16">Video text</TextBlock>
+                    </controls:TabViewItem>
+
+                    <controls:TabViewItem Icon="Video" Header="2">
+                        <TextBlock Padding="16">Video text</TextBlock>
+                    </controls:TabViewItem>
+
+                    <controls:TabViewItem Icon="Video" Header="3">
+                        <TextBlock Padding="16">Video text</TextBlock>
+                    </controls:TabViewItem>
+
+                    <controls:TabViewItem Icon="Video" Header="4">
+                        <TextBlock Padding="16">Video text</TextBlock>
+                    </controls:TabViewItem>
+
+                    <controls:TabViewItem Icon="Video" Header="5">
                         <TextBlock Padding="16">Video text</TextBlock>
                     </controls:TabViewItem>
 

@@ -7,6 +7,7 @@
 #include "DoubleUtil.h"
 #include "RuntimeProfiler.h"
 #include "ResourceAccessor.h"
+#include "SharedHelpers.h"
 
 static constexpr double c_tabMaximumWidth = 200.0;
 static constexpr double c_tabMinimumWidth = 48.0;
@@ -23,8 +24,7 @@ void TabView::OnApplyTemplate()
     winrt::IControlProtected controlProtected{ *this };
 
     m_tabContentPresenter.set(GetTemplateChildT<winrt::ContentPresenter>(L"TabContentPresenter", controlProtected));
-    // ### why doesn't this work as a winrt::ScrollViewer???
-    m_scrollViewer.set(GetTemplateChildT<winrt::FrameworkElement>(L"ScrollViewer", controlProtected));
+    m_scrollViewer.set(GetTemplateChildT<winrt::FxScrollViewer>(L"ScrollViewer", controlProtected));
 
     //### do I need a revoker when listening to my own event....??
     m_loadedRevoker = Loaded(winrt::auto_revoke, { this, &TabView::OnLoaded });
@@ -44,6 +44,28 @@ void TabView::OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs&
 
 void TabView::OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
 {
+    winrt::IControlProtected controlProtected{ *this };
+
+    // ### yeah this isn't working -- start back up here on friday. Prolly gotta walk the tree to find them.
+    //m_scrollDecreaseButton.set(GetTemplateChildT<winrt::RepeatButton>(L"ScrollDecreaseButton", controlProtected));
+    //m_scrollIncreaseButton.set(GetTemplateChildT<winrt::RepeatButton>(L"ScrollIncreaseButton", controlProtected));
+
+    // ### yeah probably need to do this on scrollviewer load, not this on loaded, anyway.
+    if (auto scrollViewer = m_scrollViewer.get())
+    {
+        m_scrollDecreaseButton.set(SharedHelpers::FindInVisualTreeByName(scrollViewer, L"ScrollDecreaseButton").as<winrt::RepeatButton>());
+        if (auto decreaseButton = m_scrollDecreaseButton.get())
+        {
+            m_scrollDecreaseClickRevoker = decreaseButton.Click(winrt::auto_revoke, { this, &TabView::OnScrollDecreaseClick });
+        }
+
+        m_scrollIncreaseButton.set(SharedHelpers::FindInVisualTreeByName(scrollViewer, L"ScrollIncreaseButton").as<winrt::RepeatButton>());
+        if (auto increaseButton = m_scrollIncreaseButton.get())
+        {
+            m_scrollIncreaseClickRevoker = increaseButton.Click(winrt::auto_revoke, { this, &TabView::OnScrollIncreaseClick });
+        }
+    }
+
     UpdateTabWidths();
 }
 
@@ -74,6 +96,22 @@ void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt:
                 //}
             }
         }
+    }
+}
+
+void TabView::OnScrollDecreaseClick(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
+{
+    if (auto scrollViewer = m_scrollViewer.get())
+    {
+        scrollViewer.ChangeView(std::max(0.0, scrollViewer.HorizontalOffset() - 50.0), nullptr, nullptr); //### magic numbers
+    }
+}
+
+void TabView::OnScrollIncreaseClick(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
+{
+    if (auto scrollViewer = m_scrollViewer.get())
+    {
+        scrollViewer.ChangeView(std::min(scrollViewer.ScrollableWidth(), scrollViewer.HorizontalOffset() + 50.0), nullptr, nullptr);
     }
 }
 
@@ -119,6 +157,23 @@ void TabView::UpdateTabWidths()
         {
             double tabWidthForScroller = scrollViewer.ActualWidth() / (double)(Items().Size()); //scrollViewer.ExtentWidth() / (double)(Items().Size());
             tabWidth = std::min(std::max(tabWidthForScroller, minTabWidth), maxTabWidth);
+
+            auto decreaseButton = m_scrollDecreaseButton.get();
+            auto increaseButton = m_scrollIncreaseButton.get();
+            if (decreaseButton && increaseButton)
+            {
+                // ### maybe this is right, maybe there's something else to check...
+                if (tabWidthForScroller < tabWidth)
+                {
+                    decreaseButton.Visibility(winrt::Visibility::Visible);
+                    increaseButton.Visibility(winrt::Visibility::Visible);
+                }
+                else
+                {
+                    decreaseButton.Visibility(winrt::Visibility::Collapsed);
+                    increaseButton.Visibility(winrt::Visibility::Collapsed);
+                }
+            }
         }
 
         for (int i = 0; i < (int)(Items().Size()); i++)
