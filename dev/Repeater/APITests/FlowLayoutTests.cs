@@ -10,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using Windows.Foundation;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Markup;
@@ -36,9 +35,8 @@ using RecyclePool = Microsoft.UI.Xaml.Controls.RecyclePool;
 using StackLayout = Microsoft.UI.Xaml.Controls.StackLayout;
 using FlowLayout = Microsoft.UI.Xaml.Controls.FlowLayout;
 using UniformGridLayout = Microsoft.UI.Xaml.Controls.UniformGridLayout;
-using ScrollAnchorProvider = Microsoft.UI.Xaml.Controls.ScrollAnchorProvider;
+using ItemsRepeaterScrollHost = Microsoft.UI.Xaml.Controls.ItemsRepeaterScrollHost;
 using VirtualizingLayoutContext = Microsoft.UI.Xaml.Controls.VirtualizingLayoutContext;
-using LayoutContext = Microsoft.UI.Xaml.Controls.LayoutContext;
 using LayoutPanel = Microsoft.UI.Xaml.Controls.LayoutPanel;
 #endif
 
@@ -207,6 +205,10 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
                                 throw new InvalidOperationException("Unhanlded dimension choice.");
                         }
 
+                        // Need to invalidate measure to kick in bigger size, 
+                        // If the new size is larger, then setting the value does not
+                        // invalidate measure, because the desired size is going to be same.
+                        panel.InvalidateMeasure();
                         Content.UpdateLayout();
 
                         // validate that our dimension's size has propagated to all other buttons
@@ -226,6 +228,49 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
                                 case DimensionChoice.Size:
                                     Verify.AreEqual(100, layoutBounds.Width);
                                     Verify.AreEqual(100, layoutBounds.Height);
+                                    break;
+                                default:
+                                    throw new InvalidOperationException("Unhanlded dimension choice.");
+
+                            }
+                        }
+
+                        // Make the first item smaller
+                        switch (dimension)
+                        {
+                            case DimensionChoice.Width:
+                                firstItem.Width = 32;
+                                break;
+                            case DimensionChoice.Height:
+                                firstItem.Height = 32;
+                                break;
+                            case DimensionChoice.Size:
+                                firstItem.Width = 32;
+                                firstItem.Height = 32;
+                                break;
+                            default:
+                                throw new InvalidOperationException("Unhanlded dimension choice.");
+                        }
+
+                        Content.UpdateLayout();
+
+                        // validate that our dimension's size has propagated to all other buttons
+                        for (int i = 0; i < panel.Children.Count; i++)
+                        {
+                            var child = (FrameworkElement)panel.Children.ElementAt(i);
+                            var layoutBounds = LayoutInformation.GetLayoutSlot(child);
+
+                            switch (dimension)
+                            {
+                                case DimensionChoice.Width:
+                                    Verify.AreEqual(32, layoutBounds.Width);
+                                    break;
+                                case DimensionChoice.Height:
+                                    Verify.AreEqual(32, layoutBounds.Height);
+                                    break;
+                                case DimensionChoice.Size:
+                                    Verify.AreEqual(32, layoutBounds.Width);
+                                    Verify.AreEqual(32, layoutBounds.Height);
                                     break;
                                 default:
                                     throw new InvalidOperationException("Unhanlded dimension choice.");
@@ -846,11 +891,11 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
                         };
 
                         SetUpScrollViewerOrientation(scrollViewer, scrollOrientation);
-                        Content = new ScrollAnchorProvider()
+                        Content = new ItemsRepeaterScrollHost()
                         {
                             Width = 400,
                             Height = 400,
-                            Content = scrollViewer
+                            ScrollViewer = scrollViewer
                         };
 
                         Content.UpdateLayout();
@@ -918,8 +963,8 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
                     scrollViewer.Content = repeater;
                     scrollViewer.Width = scrollViewer.Height = 600;
 
-                    var tracker = new ScrollAnchorProvider();
-                    tracker.Content = scrollViewer;
+                    var tracker = new ItemsRepeaterScrollHost();
+                    tracker.ScrollViewer = scrollViewer;
 
                     Content = tracker;
                     Content.UpdateLayout();
@@ -1016,8 +1061,8 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
                         scrollViewer.Width = scrollViewer.Height = 200;
                         SetUpScrollViewerOrientation(scrollViewer, scrollOrientation);
 
-                        var tracker = new ScrollAnchorProvider();
-                        tracker.Content = scrollViewer;
+                        var tracker = new ItemsRepeaterScrollHost();
+                        tracker.ScrollViewer = scrollViewer;
                         Content = tracker;
 
                         repeater.ElementPrepared += (o, e) =>
@@ -1060,6 +1105,75 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
                     Verify.IsTrue(repeater.ActualHeight > 10);
                 }
             });
+        }
+
+        // Make sure that GridLayout does not end up de-virtualizing if scrolling in the 
+        // same orientation as items are being laid out. It will layout in one line and 
+        // never wrap, but we should avoid devirtualizing.
+        [TestMethod]
+        public void ValidateGridLayoutWithSameOrientationAsScrolling()
+        {
+            ManualResetEvent viewChanged = new ManualResetEvent(false);
+            ScrollViewer scrollViewer = null;
+            var lastRealizedIndex = int.MinValue;
+            var firstRealizedIndex = int.MaxValue;
+            RunOnUIThread.Execute(() =>
+            {
+             
+                var repeater = new ItemsRepeater() {
+                    ItemsSource = Enumerable.Range(1, 1000),
+                    ItemTemplate = GetDataTemplate(@"<Button Content='{Binding}' Width='100' Height='100'/>"),
+                    Layout = new UniformGridLayout() { Orientation = Orientation.Vertical },
+                    HorizontalCacheLength = 0,
+                    VerticalCacheLength = 0,
+                };
+
+                repeater.ElementPrepared += (sender, args) =>
+                {
+                    firstRealizedIndex = Math.Min(firstRealizedIndex, args.Index);
+                    lastRealizedIndex = Math.Max(lastRealizedIndex, args.Index);
+                };
+
+                scrollViewer = new ScrollViewer() {
+                    Content = repeater,
+                    Height = 200,
+                };
+
+                var anchorProvier = new ItemsRepeaterScrollHost() {
+                    ScrollViewer = scrollViewer
+                };
+
+                Content = anchorProvier;
+                Content.UpdateLayout();
+
+                Verify.IsLessThan(lastRealizedIndex - firstRealizedIndex, 10); 
+
+                scrollViewer.ViewChanged += (sender, args) =>
+                {
+                    viewChanged.Set();
+                };
+
+            });
+
+            for (int i = 0; i < 3; i++)
+            {
+                viewChanged.Reset();
+                RunOnUIThread.Execute(() =>
+                {
+                    lastRealizedIndex = int.MinValue;
+                    firstRealizedIndex = int.MaxValue;
+                    scrollViewer.ChangeView(horizontalOffset: 0, verticalOffset: (i+1)*80, zoomFactor: null, disableAnimation: true);
+                });
+
+                IdleSynchronizer.Wait();
+                Verify.IsTrue(viewChanged.WaitOne(DefaultWaitTime));
+
+                RunOnUIThread.Execute(() =>
+                {
+                // we used to crash due to a layout cycle before we get here.
+                Verify.IsLessThan(lastRealizedIndex - firstRealizedIndex, 10);
+                });
+            }
         }
 
         #region Private Helpers
@@ -1189,7 +1303,7 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
                         </DataTemplate>", content));
         }
 
-        private ScrollAnchorProvider CreateAndInitializeRepeater(
+        private ItemsRepeaterScrollHost CreateAndInitializeRepeater(
            OrientationBasedMeasures om,
            object itemsSource,
            VirtualizingLayout layout,
@@ -1216,11 +1330,11 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
             };
 
             SetUpScrollViewerOrientation(scrollViewer, om.ScrollOrientation);
-            return new ScrollAnchorProvider()
+            return new ItemsRepeaterScrollHost()
             {
                 Width = 400,
                 Height = 400,
-                Content = scrollViewer
+                ScrollViewer = scrollViewer
             };
         }
 

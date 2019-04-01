@@ -88,6 +88,7 @@
 
 #include "XamlMetadataProvider.h"
 #include "XamlMetadataProviderGenerated.h"
+#include "XamlControlsResources.h"
 
 <#
     ClearIndent();

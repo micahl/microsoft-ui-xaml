@@ -29,8 +29,11 @@ using AnimationMode = Microsoft.UI.Xaml.Controls.AnimationMode;
 using SnapPointsMode = Microsoft.UI.Xaml.Controls.SnapPointsMode;
 using ScrollOptions = Microsoft.UI.Xaml.Controls.ScrollOptions;
 using ZoomOptions = Microsoft.UI.Xaml.Controls.ZoomOptions;
-using ScrollerSnapPointIrregular = Microsoft.UI.Xaml.Controls.Primitives.ScrollerSnapPointIrregular;
-using ScrollerSnapPointAlignment = Microsoft.UI.Xaml.Controls.Primitives.ScrollerSnapPointAlignment;
+using ScrollSnapPoint = Microsoft.UI.Xaml.Controls.Primitives.ScrollSnapPoint;
+using RepeatedScrollSnapPoint = Microsoft.UI.Xaml.Controls.Primitives.RepeatedScrollSnapPoint;
+using ZoomSnapPoint = Microsoft.UI.Xaml.Controls.Primitives.ZoomSnapPoint;
+using RepeatedZoomSnapPoint = Microsoft.UI.Xaml.Controls.Primitives.RepeatedZoomSnapPoint;
+using ScrollSnapPointsAlignment = Microsoft.UI.Xaml.Controls.Primitives.ScrollSnapPointsAlignment;
 using ScrollAnimationStartingEventArgs = Microsoft.UI.Xaml.Controls.ScrollAnimationStartingEventArgs;
 using ZoomAnimationStartingEventArgs = Microsoft.UI.Xaml.Controls.ZoomAnimationStartingEventArgs;
 using ScrollCompletedEventArgs = Microsoft.UI.Xaml.Controls.ScrollCompletedEventArgs;
@@ -1815,21 +1818,92 @@ namespace MUXControlsTestApp
             }
         }
 
-        private void BtnAddSnapPoint_Click(object sender, RoutedEventArgs e)
+        private void CmbSnapPointKind_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbSnapPointAlignment != null)
+            {
+                cmbSnapPointAlignment.IsEnabled = cmbSnapPointKind.SelectedIndex != 2;
+            }
+        }
+
+        private void BtnAddIrregularSnapPoint_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                ScrollerSnapPointIrregular snapPoint = new ScrollerSnapPointIrregular(Convert.ToSingle(txtSnapPointValue.Text), Convert.ToSingle(txtSnapPointValueRange.Text), ScrollerSnapPointAlignment.Near);
+#if ApplicableRangeType
                 if (cmbSnapPointKind.SelectedIndex == 0)
                 {
+                    ScrollSnapPoint snapPoint = new ScrollSnapPoint(Convert.ToSingle(txtSnapPointValue.Text), Convert.ToSingle(txtSnapPointValueRange.Text), ScrollSnapPointsAlignment.Near);
                     scroller.VerticalSnapPoints.Add(snapPoint);
                 }
                 else if(cmbSnapPointKind.SelectedIndex == 1)
                 {
+                    ScrollSnapPoint snapPoint = new ScrollSnapPoint(Convert.ToSingle(txtSnapPointValue.Text), Convert.ToSingle(txtSnapPointValueRange.Text), ScrollSnapPointsAlignment.Near);
                     scroller.HorizontalSnapPoints.Add(snapPoint); 
                 }
                 else if(cmbSnapPointKind.SelectedIndex == 2)
                 {
+                    ZoomSnapPoint snapPoint = new ZoomSnapPoint(Convert.ToSingle(txtSnapPointValue.Text), Convert.ToSingle(txtSnapPointValueRange.Text));
+                    scroller.ZoomSnapPoints.Add(snapPoint);
+                }
+#else
+                if (cmbSnapPointKind.SelectedIndex == 0)
+                {
+                    ScrollSnapPoint snapPoint = new ScrollSnapPoint(
+                        Convert.ToSingle(txtIrregularSnapPointValue.Text),
+                        (ScrollSnapPointsAlignment)cmbSnapPointAlignment.SelectedIndex);
+                    if (cmbSnapPointKind.SelectedIndex == 0)
+                    {
+                        scroller.VerticalSnapPoints.Add(snapPoint);
+                    }
+                    else
+                    {
+                        scroller.HorizontalSnapPoints.Add(snapPoint);
+                    }
+                }
+                else if(cmbSnapPointKind.SelectedIndex == 2)
+                {
+                    ZoomSnapPoint snapPoint = new ZoomSnapPoint(
+                        Convert.ToSingle(txtIrregularSnapPointValue.Text));
+                    scroller.ZoomSnapPoints.Add(snapPoint);
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                txtExceptionReport.Text = ex.ToString();
+                lstScrollerEvents.Items.Add(ex.ToString());
+            }
+        }
+
+        private void BtnAddRepeatedSnapPoint_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cmbSnapPointKind.SelectedIndex == 0 || cmbSnapPointKind.SelectedIndex == 1)
+                {
+                    RepeatedScrollSnapPoint snapPoint = new RepeatedScrollSnapPoint(
+                        Convert.ToDouble(txtRepeatedSnapPointOffset.Text),
+                        Convert.ToDouble(txtRepeatedSnapPointInterval.Text),
+                        Convert.ToDouble(txtRepeatedSnapPointStart.Text),
+                        Convert.ToDouble(txtRepeatedSnapPointEnd.Text),
+                        (ScrollSnapPointsAlignment)cmbSnapPointAlignment.SelectedIndex);
+                    if (cmbSnapPointKind.SelectedIndex == 0)
+                    {
+                        scroller.VerticalSnapPoints.Add(snapPoint);
+                    }
+                    else
+                    {
+                        scroller.HorizontalSnapPoints.Add(snapPoint);
+                    }
+                }
+                else if (cmbSnapPointKind.SelectedIndex == 2)
+                {
+                    RepeatedZoomSnapPoint snapPoint = new RepeatedZoomSnapPoint(
+                        Convert.ToDouble(txtRepeatedSnapPointOffset.Text),
+                        Convert.ToDouble(txtRepeatedSnapPointInterval.Text),
+                        Convert.ToDouble(txtRepeatedSnapPointStart.Text),
+                        Convert.ToDouble(txtRepeatedSnapPointEnd.Text));
                     scroller.ZoomSnapPoints.Add(snapPoint);
                 }
             }

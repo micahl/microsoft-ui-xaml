@@ -1,6 +1,6 @@
 [CmdLetBinding()]
 Param(
-    [string]$inputs,
+    [string]$inputDirectory,
     [string]$outputDirectory,
     [string]$Platform,
     [string]$Configuration,
@@ -9,11 +9,11 @@ Param(
     [int]$Subversion = "000",
     [string]$builddate_yymm,
     [string]$builddate_dd,
-    [string]$TestAppManifest,
     [string]$WindowsSdkBinDir,
     [string]$BasePackageName,
     [string]$PackageNameSuffix)
 
+Import-Module $PSScriptRoot\..\..\tools\Utils.psm1 -DisableNameChecking
 
 function Copy-IntoNewDirectory {
     Param($source, $destinationDir, [switch]$IfExists = $false)
@@ -35,8 +35,8 @@ $fullOutputPath = [IO.Path]::GetFullPath($outputDirectory)
 Write-Host "MakeFrameworkPackage: $fullOutputPath" -ForegroundColor Magenta 
 # Write-Output "Path: $env:PATH"
 
-$output = mkdir -Force $fullOutputPath\PackageContents
-$output = mkdir -Force $fullOutputPath\Resources
+mkdir -Force $fullOutputPath\PackageContents | Out-Null
+mkdir -Force $fullOutputPath\Resources | Out-Null
 
 Copy-IntoNewDirectory FrameworkPackageContents\* $fullOutputPath\PackageContents
 
@@ -45,68 +45,54 @@ Copy-IntoNewDirectory PriConfig\* $fullOutputPath
 $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
 $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\x86"
 
-$scriptDirectory = Split-Path -Path $script:MyInvocation.MyCommand.Path -Parent
-
 $ActivatableTypes = ""
-
-$activatableTypeEntries = @{}
-
-$testAppManifestContents = Get-Content $TestAppManifest -Raw
-ForEach ($match in ($testAppManifestContents | Select-String '(?s)(\<Extension Category.*?\</Extension\>)' -AllMatches).Matches)
-{
-    $value = $match.Value
-    $dllPath = ($value | Select-String  '\<Path\>(.*?)\</Path\>').Matches[0].Groups[1]
-    $activatableTypeEntries[$dllPath.Value.ToLower()] = $value
-}
 
 # Copy over and add to the manifest file list the .dll, .winmd for the inputs. Also copy the .pri
 # but don't list it because it will be merged together.
-ForEach ($input in ($inputs -split ";"))
-{
-    Write-Output "Input: $input"
-    $inputBaseFileName = [System.IO.Path]::GetFileNameWithoutExtension($input)
-    $inputBasePath = Split-Path $input -Parent
-    
-    Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
-    Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.pri" $fullOutputPath\Resources
-    Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 
-    Write-Verbose "Copying $inputBasePath\Themes"
-    Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.UI.Xaml
+Write-Output "Input: $inputDirectory"
+$inputBaseFileName = "Microsoft.UI.Xaml"
+$inputBasePath = $inputDirectory
 
+Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.pri" $fullOutputPath\Resources
+Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
+
+Write-Verbose "Copying $inputBasePath\Themes"
+Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.UI.Xaml
+
+[xml]$sdkPropsContent = Get-Content $PSScriptRoot\..\..\sdkversion.props
+$highestSdkVersion = $sdkPropsContent.GetElementsByTagName("*").'#text' -match "10." | Sort-Object | Select-Object -Last 1
+$sdkReferencesPath=$kitsRoot10 + "References\" + $highestSdkVersion;    
+$foundationWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.FoundationContract" -Filter "Windows.Foundation.FoundationContract.winmd" | Select-Object -ExpandProperty FullName
+$universalWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.UniversalApiContract" -Filter "Windows.Foundation.UniversalApiContract.winmd" | Select-Object -ExpandProperty FullName
+$refrenceWinmds = $foundationWinmdPath + ";" + $universalWinmdPath
+$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+Write-Host $classes.Length Types found.
 @"
 "$inputBaseFileName.dll" "$inputBaseFileName.dll"
-"$inputBaseFileName.winmd" "$inputBaseFileName.winmd"
+"$inputBaseFileName.winmd" "$inputBaseFileName.winmd" 
 "@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 
-    $ActivatableTypes += $activatableTypeEntries["$($inputBaseFileName.ToLower()).dll"]
+    $ActivatableTypes += @"
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>$inputBaseFileName.dll</Path>
 
-    # NOTE: Build machines don't have ILDAsm or .NET SDK so we have to do this differently.
-#    # Get the activatable types out of each WinMD
-#    $ildasmCommand = "`"ildasm.exe`" /classlist `"$inputBasePath\$inputBaseFileName.winmd`" /text"
-#    Write-Host "cmd /c $ildasmCommand"
-#    $classes = cmd /c $ildasmCommand | where {$_.Contains(".class public")}
-#    $classes = $classes -replace '.* ([\w\.]+)$',"`$1"
+"@
 
-#    $ActivatableTypes += @"
-#    <Extension Category="windows.activatableClass.inProcessServer">
-#      <InProcessServer>
-#        <Path>$inputBaseFileName.dll</Path>
-
-#"@
-#    ForEach ($class in $classes)
-#    {
-#        Write-Host "Activatable type : $class"
-#        $ActivatableTypes += "        <ActivatableClass ActivatableClassId=`"$class`" ThreadingModel=`"both`" />`r`n"
-#    }
-
-#    $ActivatableTypes += @"
-#      </InProcessServer>
-#    </Extension>
-
-#"@
+ForEach ($class in $classes)
+{
+    $className = $class.fullname
+    #Write-Host "Activatable type : $className"
+    $ActivatableTypes += "        <ActivatableClass ActivatableClassId=`"$className`" ThreadingModel=`"both`" />`r`n"
 }
 
+$ActivatableTypes += @"
+      </InProcessServer>
+    </Extension>
+
+"@
 
 Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
 
@@ -276,7 +262,7 @@ Write-Host $makeappx
 cmd /c $makeappx
 if ($LastExitCode -ne 0) { Exit 1 }
 
-if ($env:TFS_ToolsDirectory -and ($env:BUILD_DEFINITIONNAME -match "_release") -and $env:UseSimpleSign)
+if ($env:TFS_ToolsDirectory -and ($env:BUILD_DEFINITIONNAME -match "release") -and $env:UseSimpleSign)
 {
     # From MakeAppxBundle in the XES tools
     $signToolPath = $env:TFS_ToolsDirectory + "\bin\SimpleSign.exe"
