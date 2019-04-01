@@ -46,10 +46,6 @@ void TabView::OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEve
 {
     winrt::IControlProtected controlProtected{ *this };
 
-    // ### yeah this isn't working -- start back up here on friday. Prolly gotta walk the tree to find them.
-    //m_scrollDecreaseButton.set(GetTemplateChildT<winrt::RepeatButton>(L"ScrollDecreaseButton", controlProtected));
-    //m_scrollIncreaseButton.set(GetTemplateChildT<winrt::RepeatButton>(L"ScrollIncreaseButton", controlProtected));
-
     // ### yeah probably need to do this on scrollviewer load, not this on loaded, anyway.
     if (auto scrollViewer = m_scrollViewer.get())
     {
