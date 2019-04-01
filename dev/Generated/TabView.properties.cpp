@@ -26,7 +26,7 @@ void TabViewProperties::EnsureProperties()
                 winrt::name_of<winrt::TabView>(),
                 false /* isAttached */,
                 ValueHelper<winrt::TabViewWidthMode>::BoxValueIfNecessary(winrt::TabViewWidthMode::SizeToContent),
-                winrt::PropertyChangedCallback(&OnPropertyChanged));
+                winrt::PropertyChangedCallback(&OnTabWidthModePropertyChanged));
     }
 }
 
@@ -35,7 +35,7 @@ void TabViewProperties::ClearProperties()
     s_TabWidthModeProperty = nullptr;
 }
 
-void TabViewProperties::OnPropertyChanged(
+void TabViewProperties::OnTabWidthModePropertyChanged(
     winrt::DependencyObject const& sender,
     winrt::DependencyPropertyChangedEventArgs const& args)
 {

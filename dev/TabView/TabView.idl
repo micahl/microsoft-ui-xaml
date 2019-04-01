@@ -9,12 +9,12 @@ enum TabViewWidthMode
 [WUXC_VERSION_RS5]
 [webhosthidden]
 [MUX_PROPERTY_CHANGED_CALLBACK(TRUE)]
+[MUX_PROPERTY_CHANGED_CALLBACK_METHODNAME("OnPropertyChanged")]
 unsealed runtimeclass TabView : Windows.UI.Xaml.Controls.ListView
 {
     TabView();
 
     [MUX_DEFAULT_VALUE("winrt::TabViewWidthMode::SizeToContent")]
-    [MUX_PROPERTY_CHANGED_CALLBACK(TRUE)]
     TabViewWidthMode TabWidthMode{ get; set; };
 
     static Windows.UI.Xaml.DependencyProperty TabWidthModeProperty{ get; };
@@ -23,16 +23,15 @@ unsealed runtimeclass TabView : Windows.UI.Xaml.Controls.ListView
 [WUXC_VERSION_RS5]
 [webhosthidden]
 [MUX_PROPERTY_CHANGED_CALLBACK(TRUE)]
+[MUX_PROPERTY_CHANGED_CALLBACK_METHODNAME("OnPropertyChanged")]
 unsealed runtimeclass TabViewItem : Windows.UI.Xaml.Controls.ListViewItem
 {
     TabViewItem();
 
-    [MUX_PROPERTY_CHANGED_CALLBACK(TRUE)]
     String Header{ get; set; };
 
     Windows.UI.Xaml.DataTemplate HeaderTemplate{ get; set; };
 
-    [MUX_PROPERTY_CHANGED_CALLBACK(TRUE)]
     Windows.UI.Xaml.Controls.IconElement Icon{ get; set; };
 
     static Windows.UI.Xaml.DependencyProperty HeaderProperty{ get; };

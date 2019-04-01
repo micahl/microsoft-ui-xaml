@@ -28,7 +28,7 @@ void TabViewItemProperties::EnsureProperties()
                 winrt::name_of<winrt::TabViewItem>(),
                 false /* isAttached */,
                 ValueHelper<winrt::hstring>::BoxedDefaultValue(),
-                winrt::PropertyChangedCallback(&OnPropertyChanged));
+                winrt::PropertyChangedCallback(&OnHeaderPropertyChanged));
     }
     if (!s_HeaderTemplateProperty)
     {
@@ -39,7 +39,7 @@ void TabViewItemProperties::EnsureProperties()
                 winrt::name_of<winrt::TabViewItem>(),
                 false /* isAttached */,
                 ValueHelper<winrt::DataTemplate>::BoxedDefaultValue(),
-                winrt::PropertyChangedCallback(&OnPropertyChanged));
+                winrt::PropertyChangedCallback(&OnHeaderTemplatePropertyChanged));
     }
     if (!s_IconProperty)
     {
@@ -50,7 +50,7 @@ void TabViewItemProperties::EnsureProperties()
                 winrt::name_of<winrt::TabViewItem>(),
                 false /* isAttached */,
                 ValueHelper<winrt::IconElement>::BoxedDefaultValue(),
-                winrt::PropertyChangedCallback(&OnPropertyChanged));
+                winrt::PropertyChangedCallback(&OnIconPropertyChanged));
     }
 }
 
@@ -61,7 +61,23 @@ void TabViewItemProperties::ClearProperties()
     s_IconProperty = nullptr;
 }
 
-void TabViewItemProperties::OnPropertyChanged(
+void TabViewItemProperties::OnHeaderPropertyChanged(
+    winrt::DependencyObject const& sender,
+    winrt::DependencyPropertyChangedEventArgs const& args)
+{
+    auto owner = sender.as<winrt::TabViewItem>();
+    winrt::get_self<TabViewItem>(owner)->OnPropertyChanged(args);
+}
+
+void TabViewItemProperties::OnHeaderTemplatePropertyChanged(
+    winrt::DependencyObject const& sender,
+    winrt::DependencyPropertyChangedEventArgs const& args)
+{
+    auto owner = sender.as<winrt::TabViewItem>();
+    winrt::get_self<TabViewItem>(owner)->OnPropertyChanged(args);
+}
+
+void TabViewItemProperties::OnIconPropertyChanged(
     winrt::DependencyObject const& sender,
     winrt::DependencyPropertyChangedEventArgs const& args)
 {
