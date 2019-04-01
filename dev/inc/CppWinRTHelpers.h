@@ -217,6 +217,77 @@ inline PropertyChanged_revoker RegisterPropertyChanged(winrt::DependencyObject c
 }
 
 
+struct AddHandler_revoker
+{
+    AddHandler_revoker() noexcept = default;
+    AddHandler_revoker(AddHandler_revoker const&) = delete;
+    AddHandler_revoker& operator=(AddHandler_revoker const&) = delete;
+    AddHandler_revoker(AddHandler_revoker&& other)
+    {
+        move_from(other);
+    }
+
+    AddHandler_revoker& operator=(AddHandler_revoker&& other)
+    {
+        move_from(other);
+        return *this;
+    }
+
+    AddHandler_revoker(winrt::UIElement const& object, winrt::RoutedEvent const& event, winrt::IInspectable const& handler) :
+        m_object(object),
+        m_event(event),
+        m_handler(handler)
+    {}
+
+    ~AddHandler_revoker() noexcept
+    {
+        revoke();
+    }
+
+    void revoke() noexcept
+    {
+        if (!m_object)
+        {
+            return;
+        }
+
+        if (auto object = m_object.get())
+        {
+            object.RemoveHandler(m_event, m_handler);
+        }
+
+        m_object = nullptr;
+    }
+
+    explicit operator bool() const noexcept
+    {
+        return static_cast<bool>(m_object);
+    }
+private:
+    void move_from(AddHandler_revoker& other)
+    {
+        if (this != &other)
+        {
+            revoke();
+            std::swap(m_object, other.m_object);
+            std::swap(m_event, other.m_event);
+            std::swap(m_handler, other.m_handler);
+        }
+    }
+
+    weak_ref<winrt::UIElement> m_object;
+    winrt::RoutedEvent m_event{ nullptr };
+    winrt::IInspectable m_handler{};
+};
+
+template<typename T>
+inline AddHandler_revoker UIElement_AddHandler(winrt::UIElement const& object, winrt::RoutedEvent const& event, T const& callback)
+{
+    auto handler = winrt::box_value<T>(callback);
+    object.AddHandler(event, handler);
+    return { object, event, handler };
+}
+
 // This type exists for types that in metadata derive from FrameworkElement but internally want to derive from Panel
 // to get "protected" Children.
 // Using it is just like any other winrt::implementation::FooT type *except* that you must pass an additional parameter

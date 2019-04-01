@@ -22,7 +22,6 @@ TeachingTip::TeachingTip()
 
 TeachingTip::~TeachingTip()
 {
-    m_previouslyFocusedElement.set(nullptr);
 }
 
 winrt::AutomationPeer TeachingTip::OnCreateAutomationPeer()
@@ -53,8 +52,6 @@ void TeachingTip::OnApplyTemplate()
     m_closeButton.set(GetTemplateChildT<winrt::Button>(s_closeButtonName, controlProtected));
     m_tailEdgeBorder.set(GetTemplateChildT<winrt::Grid>(s_tailEdgeBorderName, controlProtected));
     m_tailPolygon.set(GetTemplateChildT<winrt::Polygon>(s_tailPolygonName, controlProtected));
-
-    m_acceleratorKeyActivatedRevoker = Dispatcher().AcceleratorKeyActivated(winrt::auto_revoke, { this, &TeachingTip::OnF6AcceleratorKeyClicked });
 
     if (auto && container = m_container.get())
     {
@@ -738,6 +735,10 @@ void TeachingTip::UpdateDynamicHeroContentPlacementToBottom()
 
 void TeachingTip::OnIsOpenChanged()
 {
+    m_acceleratorKeyActivatedRevoker = {};
+    m_tipGettingFocusRevoker = {};
+    m_tipLosingFocusRevoker = {};
+
     if (IsOpen())
     {
         //Reset the close reason to the default value of programmatic.
@@ -830,6 +831,20 @@ void TeachingTip::OnIsOpenChanged()
                 }
             }
         }
+
+        m_acceleratorKeyActivatedRevoker = Dispatcher().AcceleratorKeyActivated(winrt::auto_revoke, { this, &TeachingTip::OnF6AcceleratorKeyClicked });
+
+        if (auto child = m_rootElement.get())
+        {
+            m_tipGettingFocusRevoker = UIElement_AddHandler(child, winrt::UIElement::GettingFocusEvent,
+                winrt::TypedEventHandler<winrt::UIElement, winrt::GettingFocusEventArgs> { [this](auto&& sender, auto&& args) {
+                    m_hasFocusInSubtree = true;
+                }});
+            m_tipLosingFocusRevoker = UIElement_AddHandler(child, winrt::UIElement::LosingFocusEvent,
+                winrt::TypedEventHandler<winrt::UIElement, winrt::LosingFocusEventArgs> { [this](auto&& sender, auto&& args) {
+                    m_hasFocusInSubtree = false;
+                }});
+        }
     }
     else
     {
@@ -856,6 +871,7 @@ void TeachingTip::OnIsOpenChanged()
             }
         }
 
+        m_hasFocusInSubtree = false;
         m_currentEffectiveTipPlacementMode = winrt::TeachingTipPlacementMode::Auto;
         TeachingTipTestHooks::NotifyEffectivePlacementChanged(*this);
     }
@@ -975,25 +991,7 @@ void TeachingTip::OnF6AcceleratorKeyClicked(const winrt::CoreDispatcher&, const 
             m_hasF6BeenInvoked = true;
         }
 
-        auto const focusFromContent = [this, args]()
-        {
-            auto parent = winrt::FocusManager::GetFocusedElement();
-            auto const rootElement = m_rootElement.get();
-            while (parent)
-            {
-                if (auto parentAsUIElement = parent.try_as<winrt::UIElement>())
-                {
-                    if (parentAsUIElement == rootElement)
-                    {
-                        return true;
-                    }
-                }
-                parent = winrt::VisualTreeHelper::GetParent(parent.try_as<winrt::DependencyObject>());
-            }
-            return false;
-        }();
-
-        if (focusFromContent)
+        if (m_hasFocusInSubtree)
         {
             if (auto&& previouslyFocusedElement = m_previouslyFocusedElement.get())
             {
@@ -1023,17 +1021,13 @@ void TeachingTip::OnF6AcceleratorKeyClicked(const winrt::CoreDispatcher&, const 
 
             if (f6Button)
             {
-                m_closeButtonGettingFocusFromF6Revoker = f6Button.GettingFocus(winrt::auto_revoke, { this, &TeachingTip::OnCloseButtonGettingFocusFromF6 });
+                auto scopedRevoker = f6Button.GettingFocus(winrt::auto_revoke, [this](auto && sender, auto && args) {
+                    m_previouslyFocusedElement.set(args.OldFocusedElement().try_as<winrt::Control>());
+                });
                 f6Button.Focus(winrt::FocusState::Keyboard);
             }
         }
     }
-}
-
-void TeachingTip::OnCloseButtonGettingFocusFromF6(const winrt::IInspectable&, const winrt::GettingFocusEventArgs& args)
-{
-    m_previouslyFocusedElement.set(args.OldFocusedElement().try_as<winrt::Control>());
-    m_closeButtonGettingFocusFromF6Revoker.revoke();
 }
 
 void TeachingTip::OnAutomationNameChanged(const winrt::IInspectable&, const winrt::IInspectable&)
