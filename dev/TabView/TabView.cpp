@@ -155,7 +155,10 @@ void TabView::UpdateTabWidths()
         double tabWidth = maxTabWidth;
         if (auto scrollViewer = m_scrollViewer.get())
         {
-            double tabWidthForScroller = scrollViewer.ActualWidth() / (double)(Items().Size()); //scrollViewer.ExtentWidth() / (double)(Items().Size());
+            double padding = Padding().Left + Padding().Right;
+
+            // ### probably some rounding error here....?
+            double tabWidthForScroller = (scrollViewer.ActualWidth() - padding) / (double)(Items().Size()); //### ExtentWidth() didn't work??
             tabWidth = std::min(std::max(tabWidthForScroller, minTabWidth), maxTabWidth);
 
             auto decreaseButton = m_scrollDecreaseButton.get();

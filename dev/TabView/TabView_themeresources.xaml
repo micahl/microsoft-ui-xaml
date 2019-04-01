@@ -51,7 +51,7 @@
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
-    <Thickness x:Key="TabViewHeaderPadding">6,6,0,0</Thickness>
+    <Thickness x:Key="TabViewHeaderPadding">6,6,6,0</Thickness>
     <CornerRadius x:Key="TabViewItemCornerRadius">4,4,0,0</CornerRadius>
     <Thickness x:Key="TabViewItemHeaderMargin">0</Thickness>
     <Thickness x:Key="TabViewItemHeaderPadding">12,4,12,6</Thickness>
