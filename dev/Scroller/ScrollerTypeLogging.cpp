@@ -5,7 +5,8 @@
 #include "ScrollerTypeLogging.h"
 #include "Utils.h"
 
-using namespace TypeLogging;
+namespace TypeLogging
+{
 
 winrt::hstring ScrollBarVisibilityToString(const winrt::ScrollBarVisibility& scrollBarVisibility)
 {
@@ -260,4 +261,6 @@ winrt::hstring InteractionTrackerAsyncOperationTriggerToString(InteractionTracke
         MUX_ASSERT(false);
         return L"";
     }
+}
+
 }

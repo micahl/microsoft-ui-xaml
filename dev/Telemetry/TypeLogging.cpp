@@ -5,8 +5,8 @@
 #include "TypeLogging.h"
 #include "Utils.h"
 
-using namespace TypeLogging;
-
+namespace TypeLogging
+{
 #pragma region Common section
 
 winrt::hstring PointerPointToString(const winrt::PointerPoint& pointerPoint, bool verbose)
@@ -109,3 +109,5 @@ winrt::hstring ScrollingIndicatorModeToString(const winrt::ScrollingIndicatorMod
 }
 
 #pragma endregion
+
+}
