@@ -18,6 +18,7 @@
     <Midl Include="$(MSBuildThisFileDirectory)Scroller.idl" />
     <Midl Include="$(MSBuildThisFileDirectory)ScrollerPrimitives.idl" />
     <Midl Include="$(MSBuildThisFileDirectory)ScrollerAutomationPeer.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)ScrollerTestHooks.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)InteractionTrackerAsyncOperation.h" />
@@ -45,6 +46,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ZoomFactorChange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ZoomFactorChangeWithAdditionalVelocity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ZoomOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScrollerTestHooks.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScrollerTestHooksFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScrollerTestHooksAnchorEvaluatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScrollerTestHooksInteractionSourcesChangedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScrollerTypeLogging.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Generated\Scroller.properties.cpp" />
@@ -73,5 +79,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ZoomFactorChange.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ZoomFactorChangeWithAdditionalVelocity.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ZoomOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerTestHooks.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerTestHooksFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerTestHooksAnchorEvaluatedEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerTestHooksInteractionSourcesChangedEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerTypeLogging.cpp" />
   </ItemGroup>
 </Project>

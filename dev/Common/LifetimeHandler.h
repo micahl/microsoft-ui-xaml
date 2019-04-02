@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <ItemsRepeater.common.h>
 #include <MaterialHelper.h>
 #ifndef BUILD_LEAN_MUX_FOR_THE_STORE_APP
 #include <DisplayRegionHelper.h>
