@@ -11,7 +11,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel x:Name="_stackPanel">
-            <controls:RatingControl x:Name="_ratingControl"/>
+            <!--<controls:RatingControl x:Name="_ratingControl"/>-->
             <Button Content="Add cycle" Click="Button_Click"/>
             <Button Content="Add cycle in tree" Click="TreeButton_Click"/>
         </StackPanel>

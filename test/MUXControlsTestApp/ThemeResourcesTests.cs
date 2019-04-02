@@ -31,8 +31,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 #endif
 
 #if (!BUILD_WINDOWS && !BUILD_LEAN_MUX_FOR_THE_STORE_APP)
-using RatingControl = Microsoft.UI.Xaml.Controls.RatingControl;
-using PersonPicture = Microsoft.UI.Xaml.Controls.PersonPicture;
+//using RatingControl = Microsoft.UI.Xaml.Controls.RatingControl;
+//using PersonPicture = Microsoft.UI.Xaml.Controls.PersonPicture;
 #endif
 
 namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests

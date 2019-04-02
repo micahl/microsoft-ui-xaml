@@ -129,6 +129,7 @@ namespace MUXControlsTestApp
                 {
                     if (value)
                     {
+#if TODO
                         AppendResourceToMergedDictionaries("DisableAnimationsStyles.xaml", StyleOverridesPlaceholder);
 
 #if !BUILD_LEAN_MUX_FOR_THE_STORE_APP
@@ -136,6 +137,7 @@ namespace MUXControlsTestApp
                         {
                             AppendResourceToMergedDictionaries("DisableAnimationsStylesOutsideStore_rs2.xaml", StyleOverridesPlaceholder);
                         }
+#endif
 #endif
                     }
                     else
@@ -196,10 +198,9 @@ namespace MUXControlsTestApp
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             _isRootCreated = false;
-#if BUILD_WINDOWS
-            AppendResourceToMergedDictionaries("DEPControls.xaml");
-#endif
+#if SCROLLER_INCLUDED
             AppendResourceToMergedDictionaries("AdditionalStyles.xaml");
+#endif
 
             // For test purposes, add styles that disable long animations.
             DisableLongAnimations = true;
@@ -322,11 +323,7 @@ namespace MUXControlsTestApp
         {
             ResourceDictionary resourceDictionary = new ResourceDictionary();
             Application.LoadComponent(resourceDictionary, new Uri(
-#if BUILD_WINDOWS
                 "ms-appx:///"
-#else
-                "ms-appx:///Themes/"
-#endif
                 + resource), ComponentResourceLocation.Nested);
             (targetDictionary ?? Application.Current.Resources).MergedDictionaries.Add(resourceDictionary);
         }

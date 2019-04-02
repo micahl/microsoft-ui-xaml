@@ -6,12 +6,12 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 
 #if !BUILD_WINDOWS
-using RatingControl = Microsoft.UI.Xaml.Controls.RatingControl;
-using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
-using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
-using ColorPicker = Microsoft.UI.Xaml.Controls.ColorPicker;
-using ColorChangedEventArgs = Microsoft.UI.Xaml.Controls.ColorChangedEventArgs;
-using Scroller = Microsoft.UI.Xaml.Controls.Primitives.Scroller;
+//using RatingControl = Microsoft.UI.Xaml.Controls.RatingControl;
+//using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
+//using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
+//using ColorPicker = Microsoft.UI.Xaml.Controls.ColorPicker;
+//using ColorChangedEventArgs = Microsoft.UI.Xaml.Controls.ColorChangedEventArgs;
+//using Scroller = Microsoft.UI.Xaml.Controls.Primitives.Scroller;
 #endif
 
 namespace MUXControlsTestApp
@@ -20,9 +20,9 @@ namespace MUXControlsTestApp
     {
         public LeakObject()
         {
-            _ratingControl1 = new RatingControl();
-            _ratingControl2 = new RatingControl();
-            _ratingControl2.ValueChanged += _ratingControl2_OnValueChanged;
+            //_ratingControl1 = new RatingControl();
+            //_ratingControl2 = new RatingControl();
+            //_ratingControl2.ValueChanged += _ratingControl2_OnValueChanged;
         }
 
         ~LeakObject()
@@ -30,63 +30,63 @@ namespace MUXControlsTestApp
             //_ratingControl1.Value = 5;
         }
 
-        private void _ratingControl2_OnValueChanged(RatingControl sender, object args)
-        {
+        //private void _ratingControl2_OnValueChanged(RatingControl sender, object args)
+        //{
             
-        }
+        //}
 
-        public RatingControl _ratingControl1;
-        public RatingControl _ratingControl2;
+        //public RatingControl _ratingControl1;
+        //public RatingControl _ratingControl2;
     }
 
     public class EventCycleTest : Grid
     {
-        RatingControl _rating;
-        ColorPicker _colorPicker;
-        NavigationView _navigationView;
-        Scroller _scroller;
+        //RatingControl _rating;
+        //ColorPicker _colorPicker;
+        //NavigationView _navigationView;
+        //Scroller _scroller;
 
         public EventCycleTest(bool addToTree = true)
         {
-            _rating = new RatingControl();
-            _rating.ValueChanged += OnRatingValueChanged;
-            if (addToTree) Children.Add(_rating);
+            //    _rating = new RatingControl();
+            //    _rating.ValueChanged += OnRatingValueChanged;
+            //    if (addToTree) Children.Add(_rating);
 
-            _colorPicker = new ColorPicker();
-            _colorPicker.ColorChanged += OnColorPickerColorChanged;
-            if (addToTree) Children.Add(_colorPicker);
+            //    _colorPicker = new ColorPicker();
+            //    _colorPicker.ColorChanged += OnColorPickerColorChanged;
+            //    if (addToTree) Children.Add(_colorPicker);
 
-            _navigationView = new NavigationView();
-            _navigationView.SelectionChanged += OnNavigationViewSelectionChanged;
-            if (addToTree) Children.Add(_navigationView);
+            //    _navigationView = new NavigationView();
+            //    _navigationView.SelectionChanged += OnNavigationViewSelectionChanged;
+            //    if (addToTree) Children.Add(_navigationView);
 
-            var item = new NavigationViewItem();
-            _navigationView.MenuItems.Add(item);
-            
-            _scroller = new Scroller();
-            _scroller.ViewChanged += OnScrollerViewChanged;
-            if (addToTree) Children.Add(_scroller);
+            //    var item = new NavigationViewItem();
+            //    _navigationView.MenuItems.Add(item);
+
+            //    _scroller = new Scroller();
+            //    _scroller.ViewChanged += OnScrollerViewChanged;
+            //    if (addToTree) Children.Add(_scroller);
         }
 
-        private void OnItemInvoked(NavigationViewItem sender, object args)
-        {
-        }
+        //private void OnItemInvoked(NavigationViewItem sender, object args)
+        //{
+        //}
 
-        private void OnNavigationViewSelectionChanged(NavigationView sender, object args)
-        {
-        }
+        //private void OnNavigationViewSelectionChanged(NavigationView sender, object args)
+        //{
+        //}
 
-        private void OnColorPickerColorChanged(ColorPicker sender, ColorChangedEventArgs args)
-        {
-        }
-        
-        private void OnScrollerViewChanged(Scroller sender, object args)
-        {
-        }
+        //private void OnColorPickerColorChanged(ColorPicker sender, ColorChangedEventArgs args)
+        //{
+        //}
 
-        private void OnRatingValueChanged(RatingControl sender, object args)
-        {
-        }
+        //private void OnScrollerViewChanged(Scroller sender, object args)
+        //{
+        //}
+
+        //private void OnRatingValueChanged(RatingControl sender, object args)
+        //{
+        //}
     }
 
     public sealed partial class LeakTestPage : TestPage

@@ -21,15 +21,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 #endif
 
 #if !BUILD_WINDOWS
-using ScrollViewer = Microsoft.UI.Xaml.Controls.ScrollViewer;
+//using ScrollViewer = Microsoft.UI.Xaml.Controls.ScrollViewer;
 #endif
-using RatingControl = Microsoft.UI.Xaml.Controls.RatingControl;
-using ColorPicker = Microsoft.UI.Xaml.Controls.ColorPicker;
-using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
-using ParallaxView = Microsoft.UI.Xaml.Controls.ParallaxView;
-using Scroller = Microsoft.UI.Xaml.Controls.Primitives.Scroller;
-using TreeView = Microsoft.UI.Xaml.Controls.TreeView;
-using TreeViewNode = Microsoft.UI.Xaml.Controls.TreeViewNode;
+//using RatingControl = Microsoft.UI.Xaml.Controls.RatingControl;
+//using ColorPicker = Microsoft.UI.Xaml.Controls.ColorPicker;
+//using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
+//using ParallaxView = Microsoft.UI.Xaml.Controls.ParallaxView;
+//using Scroller = Microsoft.UI.Xaml.Controls.Primitives.Scroller;
+//using TreeView = Microsoft.UI.Xaml.Controls.TreeView;
+//using TreeViewNode = Microsoft.UI.Xaml.Controls.TreeViewNode;
 
 namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests
 {
@@ -59,28 +59,28 @@ namespace Windows.UI.Xaml.Tests.MUXControls.ApiTests
 
             RunOnUIThread.Execute(() =>
             {
-                var rating = new RatingControl();
-                objects["Rating"] = new WeakReference(rating);
+//                var rating = new RatingControl();
+//                objects["Rating"] = new WeakReference(rating);
 
-                var colorPicker = new ColorPicker();
-                objects["ColorPicker"] = new WeakReference(colorPicker);
+//                var colorPicker = new ColorPicker();
+//                objects["ColorPicker"] = new WeakReference(colorPicker);
 
-                var navigationView = new NavigationView();
-                objects["NavigationView"] = new WeakReference(navigationView);
+//                var navigationView = new NavigationView();
+//                objects["NavigationView"] = new WeakReference(navigationView);
 
-                var parallaxView = new ParallaxView();
-                objects["ParallaxView"] = new WeakReference(parallaxView);
+//                var parallaxView = new ParallaxView();
+//                objects["ParallaxView"] = new WeakReference(parallaxView);
 
-                var scroller = new Scroller();
-                objects["Scroller"] = new WeakReference(scroller);
+//                var scroller = new Scroller();
+//                objects["Scroller"] = new WeakReference(scroller);
 
-#if !BUILD_WINDOWS
-                if (PlatformConfiguration.IsOsVersionGreaterThanOrEqual(OSVersion.Redstone2))
-                {
-                    var scrollViewer = new ScrollViewer();
-                    objects["ScrollViewer"] = new WeakReference(scrollViewer);
-                }
-#endif
+//#if !BUILD_WINDOWS
+//                if (PlatformConfiguration.IsOsVersionGreaterThanOrEqual(OSVersion.Redstone2))
+//                {
+//                    var scrollViewer = new ScrollViewer();
+//                    objects["ScrollViewer"] = new WeakReference(scrollViewer);
+//                }
+//#endif
             });
             IdleSynchronizer.Wait();
             GC.Collect();
