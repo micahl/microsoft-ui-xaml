@@ -23,6 +23,11 @@ public:
 
     void OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs& args);
 
+    void CloseTab(winrt::TabViewItem item);
+
+    //IItemsControlOverrides
+    void OnItemsChanged(winrt::IInspectable const& item);
+
 private:
     void OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args);
     void OnSelectionChanged(const winrt::IInspectable& sender, const winrt::SelectionChangedEventArgs& args);

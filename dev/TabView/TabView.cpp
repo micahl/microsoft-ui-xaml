@@ -70,6 +70,10 @@ void TabView::OnSizeChanged(const winrt::IInspectable& sender, const winrt::Size
     UpdateTabWidths();
 }
 
+void TabView::OnItemsChanged(winrt::IInspectable const& item)
+{
+    UpdateTabWidths();
+}
 
 void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt::SelectionChangedEventArgs& args)
 {
@@ -91,6 +95,19 @@ void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt:
                 tabContentPresenter.ContentTemplate(container.ContentTemplate());
                 //}
             }
+        }
+    }
+}
+
+void TabView::CloseTab(winrt::TabViewItem container)
+{
+    // ### going to want to notify the owner I guess and give them a chance to say no, but for now....
+    if (auto item = ItemFromContainer(container))
+    {
+        uint32_t index = 0;
+        if (Items().IndexOf(item, index))
+        {
+            Items().RemoveAt(index);
         }
     }
 }

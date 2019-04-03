@@ -30,7 +30,9 @@ public:
 
     winrt::ListViewItem::Loaded_revoker m_loadedRevoker{};
     PropertyChanged_revoker m_IsSelectedChangedRevoker{};
+    winrt::ButtonBase::Click_revoker m_closeButtonClickRevoker{};
 
     void OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args);
     void OnIsSelectedChanged(const winrt::DependencyObject& sender, const winrt::DependencyProperty& args);
+    void OnCloseButtonClick(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args);
 };
