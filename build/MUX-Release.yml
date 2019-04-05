@@ -1,4 +1,7 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+variables:
+  system_accesstoken: $(System.AccessToken)
+
 jobs:
 - job: ComponentDetection
   pool:
