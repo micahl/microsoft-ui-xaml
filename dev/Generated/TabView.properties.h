@@ -16,6 +16,11 @@ public:
 
     static GlobalDependencyProperty s_TabWidthModeProperty;
 
+    winrt::event_token TabClosing(winrt::TypedEventHandler<winrt::TabView, winrt::TabViewTabClosingEventArgs> const& value);
+    void TabClosing(winrt::event_token const& token);
+
+    event_source<winrt::TypedEventHandler<winrt::TabView, winrt::TabViewTabClosingEventArgs>> m_tabClosingEventSource;
+
     static void EnsureProperties();
     static void ClearProperties();
 

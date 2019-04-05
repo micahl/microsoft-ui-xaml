@@ -107,7 +107,14 @@ void TabView::CloseTab(winrt::TabViewItem container)
         uint32_t index = 0;
         if (Items().IndexOf(item, index))
         {
-            Items().RemoveAt(index);
+            auto args = winrt::make_self<TabViewTabClosingEventArgs>(item);
+
+            m_tabClosingEventSource(*this, *args);
+
+            if (!args->Cancel())
+            {
+                Items().RemoveAt(index);
+            }
         }
     }
 }

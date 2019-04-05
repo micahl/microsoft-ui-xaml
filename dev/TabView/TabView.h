@@ -8,6 +8,23 @@
 
 #include "TabView.g.h"
 #include "TabView.properties.h"
+#include "TabViewTabClosingEventArgs.g.h"
+
+class TabViewTabClosingEventArgs :
+    public winrt::implementation::TabViewTabClosingEventArgsT<TabViewTabClosingEventArgs>
+{
+public:
+    TabViewTabClosingEventArgs(winrt::IInspectable item) { m_item = item; }
+
+    bool Cancel() { return m_cancel; }
+    void Cancel(bool value) { m_cancel = value; }
+
+    winrt::IInspectable Item() { return m_item; }
+
+private:
+    bool m_cancel{};
+    winrt::IInspectable m_item{};
+};
 
 class TabView :
     public ReferenceTracker<TabView, winrt::implementation::TabViewT>,

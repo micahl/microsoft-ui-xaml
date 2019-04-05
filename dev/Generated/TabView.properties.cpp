@@ -11,6 +11,7 @@ CppWinRTActivatableClassWithDPFactory(TabView)
 GlobalDependencyProperty TabViewProperties::s_TabWidthModeProperty{ nullptr };
 
 TabViewProperties::TabViewProperties()
+    : m_tabClosingEventSource{static_cast<TabView*>(this)}
 {
     EnsureProperties();
 }
@@ -51,4 +52,14 @@ void TabViewProperties::TabWidthMode(winrt::TabViewWidthMode const& value)
 winrt::TabViewWidthMode TabViewProperties::TabWidthMode()
 {
     return ValueHelper<winrt::TabViewWidthMode>::CastOrUnbox(static_cast<TabView*>(this)->GetValue(s_TabWidthModeProperty));
+}
+
+winrt::event_token TabViewProperties::TabClosing(winrt::TypedEventHandler<winrt::TabView, winrt::TabViewTabClosingEventArgs> const& value)
+{
+    return m_tabClosingEventSource.add(value);
+}
+
+void TabViewProperties::TabClosing(winrt::event_token const& token)
+{
+    m_tabClosingEventSource.remove(token);
 }
