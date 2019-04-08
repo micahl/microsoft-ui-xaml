@@ -8,6 +8,7 @@
 
 CppWinRTActivatableClassWithDPFactory(TabView)
 
+GlobalDependencyProperty TabViewProperties::s_CanCloseTabsProperty{ nullptr };
 GlobalDependencyProperty TabViewProperties::s_LeftCustomContentProperty{ nullptr };
 GlobalDependencyProperty TabViewProperties::s_LeftCustomContentTemplateProperty{ nullptr };
 GlobalDependencyProperty TabViewProperties::s_RightCustomContentProperty{ nullptr };
@@ -22,6 +23,17 @@ TabViewProperties::TabViewProperties()
 
 void TabViewProperties::EnsureProperties()
 {
+    if (!s_CanCloseTabsProperty)
+    {
+        s_CanCloseTabsProperty =
+            InitializeDependencyProperty(
+                L"CanCloseTabs",
+                winrt::name_of<bool>(),
+                winrt::name_of<winrt::TabView>(),
+                false /* isAttached */,
+                ValueHelper<bool>::BoxValueIfNecessary(true),
+                winrt::PropertyChangedCallback(&OnCanCloseTabsPropertyChanged));
+    }
     if (!s_LeftCustomContentProperty)
     {
         s_LeftCustomContentProperty =
@@ -81,11 +93,20 @@ void TabViewProperties::EnsureProperties()
 
 void TabViewProperties::ClearProperties()
 {
+    s_CanCloseTabsProperty = nullptr;
     s_LeftCustomContentProperty = nullptr;
     s_LeftCustomContentTemplateProperty = nullptr;
     s_RightCustomContentProperty = nullptr;
     s_RightCustomContentTemplateProperty = nullptr;
     s_TabWidthModeProperty = nullptr;
+}
+
+void TabViewProperties::OnCanCloseTabsPropertyChanged(
+    winrt::DependencyObject const& sender,
+    winrt::DependencyPropertyChangedEventArgs const& args)
+{
+    auto owner = sender.as<winrt::TabView>();
+    winrt::get_self<TabView>(owner)->OnPropertyChanged(args);
 }
 
 void TabViewProperties::OnLeftCustomContentPropertyChanged(
@@ -126,6 +147,16 @@ void TabViewProperties::OnTabWidthModePropertyChanged(
 {
     auto owner = sender.as<winrt::TabView>();
     winrt::get_self<TabView>(owner)->OnPropertyChanged(args);
+}
+
+void TabViewProperties::CanCloseTabs(bool value)
+{
+    static_cast<TabView*>(this)->SetValue(s_CanCloseTabsProperty, ValueHelper<bool>::BoxValueIfNecessary(value));
+}
+
+bool TabViewProperties::CanCloseTabs()
+{
+    return ValueHelper<bool>::CastOrUnbox(static_cast<TabView*>(this)->GetValue(s_CanCloseTabsProperty));
 }
 
 void TabViewProperties::LeftCustomContent(winrt::IInspectable const& value)

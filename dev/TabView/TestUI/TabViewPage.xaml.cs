@@ -23,5 +23,15 @@ namespace MUXControlsTestApp
         {
             this.InitializeComponent();
         }
+
+        public void CanCloseCheckBox_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            Tabs.CanCloseTabs = (bool)CanCloseCheckBox.IsChecked;
+        }
+
+        public void IsClosableCheckBox_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            FirstTab.IsClosable = (bool)IsClosableCheckBox.IsChecked;
+        }
     }
 }

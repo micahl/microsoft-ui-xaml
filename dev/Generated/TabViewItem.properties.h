@@ -18,13 +18,18 @@ public:
     void Icon(winrt::IconElement const& value);
     winrt::IconElement Icon();
 
+    void IsClosable(bool value);
+    bool IsClosable();
+
     static winrt::DependencyProperty HeaderProperty() { return s_HeaderProperty; }
     static winrt::DependencyProperty HeaderTemplateProperty() { return s_HeaderTemplateProperty; }
     static winrt::DependencyProperty IconProperty() { return s_IconProperty; }
+    static winrt::DependencyProperty IsClosableProperty() { return s_IsClosableProperty; }
 
     static GlobalDependencyProperty s_HeaderProperty;
     static GlobalDependencyProperty s_HeaderTemplateProperty;
     static GlobalDependencyProperty s_IconProperty;
+    static GlobalDependencyProperty s_IsClosableProperty;
 
     static void EnsureProperties();
     static void ClearProperties();
@@ -38,6 +43,10 @@ public:
         winrt::DependencyPropertyChangedEventArgs const& args);
 
     static void OnIconPropertyChanged(
+        winrt::DependencyObject const& sender,
+        winrt::DependencyPropertyChangedEventArgs const& args);
+
+    static void OnIsClosablePropertyChanged(
         winrt::DependencyObject const& sender,
         winrt::DependencyPropertyChangedEventArgs const& args);
 };

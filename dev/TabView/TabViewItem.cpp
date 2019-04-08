@@ -30,7 +30,12 @@ void TabViewItem::OnApplyTemplate()
     m_loadedRevoker = Loaded(winrt::auto_revoke, { this, &TabViewItem::OnLoaded });
 
     //### actually pretty sure I don't need to do this -- can't I just do this from PropertyChanged
-    m_IsSelectedChangedRevoker = RegisterPropertyChanged(*this, winrt::SelectorItem::IsSelectedProperty(), { this, &TabViewItem::OnIsSelectedChanged });
+    m_IsSelectedChangedRevoker = RegisterPropertyChanged(*this, winrt::SelectorItem::IsSelectedProperty(), { this, &TabViewItem::OnCloseButtonPropertyChanged });
+
+    if (auto tabView = SharedHelpers::GetAncestorOfType<winrt::TabView>(winrt::VisualTreeHelper::GetParent(*this)))
+    {
+        m_CanCloseTabsChangedRevoker = RegisterPropertyChanged(tabView, winrt::TabView::CanCloseTabsProperty(), { this, &TabViewItem::OnCloseButtonPropertyChanged });
+    }
 }
 
 void TabViewItem::OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
@@ -42,15 +47,24 @@ void TabViewItem::UpdateCloseButton()
 {
     if (auto closeButton = m_closeButton.get())
     {
-        //closeButton.Visibility(IsSelected() ? winrt::Visibility::Visible : winrt::Visibility::Collapsed);
+        bool canClose = IsClosable();
+        if (auto tabView = SharedHelpers::GetAncestorOfType<winrt::TabView>(winrt::VisualTreeHelper::GetParent(*this)))
+        {
+            canClose = canClose && tabView.CanCloseTabs();
+        }
+
+        closeButton.Visibility(canClose ? winrt::Visibility::Visible : winrt::Visibility::Collapsed);
     }
 }
 
 void TabViewItem::OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs& args)
 {
     winrt::IDependencyProperty property = args.Property();
-    
-    // TODO: Implement
+
+    if (property == s_IsClosableProperty)
+    {
+        UpdateCloseButton();
+    }
 }
 
 void TabViewItem::OnCloseButtonClick(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
@@ -63,7 +77,7 @@ void TabViewItem::OnCloseButtonClick(const winrt::IInspectable& sender, const wi
     }
 }
 
-void TabViewItem::OnIsSelectedChanged(const winrt::DependencyObject& sender, const winrt::DependencyProperty& args)
+void TabViewItem::OnCloseButtonPropertyChanged(const winrt::DependencyObject& sender, const winrt::DependencyProperty& args)
 {
     UpdateCloseButton();
 }

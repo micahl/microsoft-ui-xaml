@@ -113,6 +113,12 @@ void TabView::CloseTab(winrt::TabViewItem container)
 
             if (!args->Cancel())
             {
+                if (SelectedIndex() == (int32_t)index)
+                {
+                    // Select a new item.... hey, why doesn't the control seem to actually do that?
+
+                }
+
                 Items().RemoveAt(index);
             }
         }

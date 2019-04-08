@@ -16,8 +16,12 @@
 
                 <controls:TabView.Items>
 
-                    <controls:TabViewItem Icon="Home" Header="Home">
-                        <TextBlock Padding="16">Home text</TextBlock>
+                    <controls:TabViewItem x:Name="FirstTab" Icon="Home" Header="Home">
+                        <StackPanel Padding="16">
+                            <TextBlock>Home text</TextBlock>
+                            <CheckBox x:Name="CanCloseCheckBox" Checked="CanCloseCheckBox_CheckChanged" Unchecked="CanCloseCheckBox_CheckChanged" IsChecked="True" Content="CanCloseTabs"/>
+                            <CheckBox x:Name="IsClosableCheckBox" Checked="IsClosableCheckBox_CheckChanged" Unchecked="IsClosableCheckBox_CheckChanged" IsChecked="True" Content="IsClosable on first tab"/>
+                        </StackPanel>
                     </controls:TabViewItem>
 
                     <controls:TabViewItem Icon="Shop" Header="Shop">
@@ -32,8 +36,8 @@
                         <TextBlock Padding="16">Long name text</TextBlock>
                     </controls:TabViewItem>
 
-                    <controls:TabViewItem Icon="Video" Header="1">
-                        <TextBlock Padding="16">Video text</TextBlock>
+                    <controls:TabViewItem Icon="Video" Header="Not Closable" IsClosable="False">
+                        <TextBlock Padding="16">This tab can't be closed.</TextBlock>
                     </controls:TabViewItem>
 
                     <controls:TabViewItem Icon="Video" Header="2">

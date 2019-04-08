@@ -9,6 +9,9 @@ class TabViewProperties
 public:
     TabViewProperties();
 
+    void CanCloseTabs(bool value);
+    bool CanCloseTabs();
+
     void LeftCustomContent(winrt::IInspectable const& value);
     winrt::IInspectable LeftCustomContent();
 
@@ -24,12 +27,14 @@ public:
     void TabWidthMode(winrt::TabViewWidthMode const& value);
     winrt::TabViewWidthMode TabWidthMode();
 
+    static winrt::DependencyProperty CanCloseTabsProperty() { return s_CanCloseTabsProperty; }
     static winrt::DependencyProperty LeftCustomContentProperty() { return s_LeftCustomContentProperty; }
     static winrt::DependencyProperty LeftCustomContentTemplateProperty() { return s_LeftCustomContentTemplateProperty; }
     static winrt::DependencyProperty RightCustomContentProperty() { return s_RightCustomContentProperty; }
     static winrt::DependencyProperty RightCustomContentTemplateProperty() { return s_RightCustomContentTemplateProperty; }
     static winrt::DependencyProperty TabWidthModeProperty() { return s_TabWidthModeProperty; }
 
+    static GlobalDependencyProperty s_CanCloseTabsProperty;
     static GlobalDependencyProperty s_LeftCustomContentProperty;
     static GlobalDependencyProperty s_LeftCustomContentTemplateProperty;
     static GlobalDependencyProperty s_RightCustomContentProperty;
@@ -43,6 +48,10 @@ public:
 
     static void EnsureProperties();
     static void ClearProperties();
+
+    static void OnCanCloseTabsPropertyChanged(
+        winrt::DependencyObject const& sender,
+        winrt::DependencyPropertyChangedEventArgs const& args);
 
     static void OnLeftCustomContentPropertyChanged(
         winrt::DependencyObject const& sender,
