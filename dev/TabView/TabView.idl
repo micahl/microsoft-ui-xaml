@@ -26,9 +26,19 @@ unsealed runtimeclass TabView : Windows.UI.Xaml.Controls.ListView
     [MUX_DEFAULT_VALUE("winrt::TabViewWidthMode::SizeToContent")]
     TabViewWidthMode TabWidthMode{ get; set; };
 
+    Object LeftCustomContent{ get; set; };
+    Windows.UI.Xaml.DataTemplate LeftCustomContentTemplate{ get; set; };
+
+    Object RightCustomContent{ get; set; };
+    Windows.UI.Xaml.DataTemplate RightCustomContentTemplate{ get; set; };
+
     event Windows.Foundation.TypedEventHandler<TabView, TabViewTabClosingEventArgs> TabClosing;
 
     static Windows.UI.Xaml.DependencyProperty TabWidthModeProperty{ get; };
+    static Windows.UI.Xaml.DependencyProperty LeftCustomContentProperty{ get; };
+    static Windows.UI.Xaml.DependencyProperty LeftCustomContentTemplateProperty{ get; };
+    static Windows.UI.Xaml.DependencyProperty RightCustomContentProperty{ get; };
+    static Windows.UI.Xaml.DependencyProperty RightCustomContentTemplateProperty{ get; };
 }
 
 [WUXC_VERSION_RS5]

@@ -12,7 +12,8 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel Orientation="Vertical">
-            <controls:TabView x:Name="Tabs" TabWidthMode="Fixed">
+            <controls:TabView x:Name="Tabs" TabWidthMode="Fixed" CanReorderItems="True" CanDragItems="True" AllowDrop="True">
+
                 <controls:TabView.Items>
 
                     <controls:TabViewItem Icon="Home" Header="Home">

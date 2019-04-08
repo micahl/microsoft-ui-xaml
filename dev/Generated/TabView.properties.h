@@ -9,11 +9,31 @@ class TabViewProperties
 public:
     TabViewProperties();
 
+    void LeftCustomContent(winrt::IInspectable const& value);
+    winrt::IInspectable LeftCustomContent();
+
+    void LeftCustomContentTemplate(winrt::DataTemplate const& value);
+    winrt::DataTemplate LeftCustomContentTemplate();
+
+    void RightCustomContent(winrt::IInspectable const& value);
+    winrt::IInspectable RightCustomContent();
+
+    void RightCustomContentTemplate(winrt::DataTemplate const& value);
+    winrt::DataTemplate RightCustomContentTemplate();
+
     void TabWidthMode(winrt::TabViewWidthMode const& value);
     winrt::TabViewWidthMode TabWidthMode();
 
+    static winrt::DependencyProperty LeftCustomContentProperty() { return s_LeftCustomContentProperty; }
+    static winrt::DependencyProperty LeftCustomContentTemplateProperty() { return s_LeftCustomContentTemplateProperty; }
+    static winrt::DependencyProperty RightCustomContentProperty() { return s_RightCustomContentProperty; }
+    static winrt::DependencyProperty RightCustomContentTemplateProperty() { return s_RightCustomContentTemplateProperty; }
     static winrt::DependencyProperty TabWidthModeProperty() { return s_TabWidthModeProperty; }
 
+    static GlobalDependencyProperty s_LeftCustomContentProperty;
+    static GlobalDependencyProperty s_LeftCustomContentTemplateProperty;
+    static GlobalDependencyProperty s_RightCustomContentProperty;
+    static GlobalDependencyProperty s_RightCustomContentTemplateProperty;
     static GlobalDependencyProperty s_TabWidthModeProperty;
 
     winrt::event_token TabClosing(winrt::TypedEventHandler<winrt::TabView, winrt::TabViewTabClosingEventArgs> const& value);
@@ -23,6 +43,22 @@ public:
 
     static void EnsureProperties();
     static void ClearProperties();
+
+    static void OnLeftCustomContentPropertyChanged(
+        winrt::DependencyObject const& sender,
+        winrt::DependencyPropertyChangedEventArgs const& args);
+
+    static void OnLeftCustomContentTemplatePropertyChanged(
+        winrt::DependencyObject const& sender,
+        winrt::DependencyPropertyChangedEventArgs const& args);
+
+    static void OnRightCustomContentPropertyChanged(
+        winrt::DependencyObject const& sender,
+        winrt::DependencyPropertyChangedEventArgs const& args);
+
+    static void OnRightCustomContentTemplatePropertyChanged(
+        winrt::DependencyObject const& sender,
+        winrt::DependencyPropertyChangedEventArgs const& args);
 
     static void OnTabWidthModePropertyChanged(
         winrt::DependencyObject const& sender,
