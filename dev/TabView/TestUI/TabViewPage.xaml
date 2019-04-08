@@ -20,7 +20,7 @@
                         <StackPanel Padding="16">
                             <TextBlock>Home text</TextBlock>
                             <CheckBox x:Name="CanCloseCheckBox" Checked="CanCloseCheckBox_CheckChanged" Unchecked="CanCloseCheckBox_CheckChanged" IsChecked="True" Content="CanCloseTabs"/>
-                            <CheckBox x:Name="IsClosableCheckBox" Checked="IsClosableCheckBox_CheckChanged" Unchecked="IsClosableCheckBox_CheckChanged" IsChecked="True" Content="IsClosable on first tab"/>
+                            <CheckBox x:Name="IsCloseableCheckBox" Checked="IsCloseableCheckBox_CheckChanged" Unchecked="IsCloseableCheckBox_CheckChanged" IsChecked="True" Content="IsCloseable on first tab"/>
                         </StackPanel>
                     </controls:TabViewItem>
 
@@ -36,7 +36,7 @@
                         <TextBlock Padding="16">Long name text</TextBlock>
                     </controls:TabViewItem>
 
-                    <controls:TabViewItem Icon="Video" Header="Not Closable" IsClosable="False">
+                    <controls:TabViewItem Icon="Video" Header="Not Closeable" IsCloseable="False">
                         <TextBlock Padding="16">This tab can't be closed.</TextBlock>
                     </controls:TabViewItem>
 

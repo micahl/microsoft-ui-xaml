@@ -47,7 +47,7 @@ void TabViewItem::UpdateCloseButton()
 {
     if (auto closeButton = m_closeButton.get())
     {
-        bool canClose = IsClosable();
+        bool canClose = IsCloseable();
         if (auto tabView = SharedHelpers::GetAncestorOfType<winrt::TabView>(winrt::VisualTreeHelper::GetParent(*this)))
         {
             canClose = canClose && tabView.CanCloseTabs();
@@ -61,7 +61,7 @@ void TabViewItem::OnPropertyChanged(const winrt::DependencyPropertyChangedEventA
 {
     winrt::IDependencyProperty property = args.Property();
 
-    if (property == s_IsClosableProperty)
+    if (property == s_IsCloseableProperty)
     {
         UpdateCloseButton();
     }

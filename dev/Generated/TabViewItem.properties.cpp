@@ -11,7 +11,7 @@ CppWinRTActivatableClassWithDPFactory(TabViewItem)
 GlobalDependencyProperty TabViewItemProperties::s_HeaderProperty{ nullptr };
 GlobalDependencyProperty TabViewItemProperties::s_HeaderTemplateProperty{ nullptr };
 GlobalDependencyProperty TabViewItemProperties::s_IconProperty{ nullptr };
-GlobalDependencyProperty TabViewItemProperties::s_IsClosableProperty{ nullptr };
+GlobalDependencyProperty TabViewItemProperties::s_IsCloseableProperty{ nullptr };
 
 TabViewItemProperties::TabViewItemProperties()
 {
@@ -53,16 +53,16 @@ void TabViewItemProperties::EnsureProperties()
                 ValueHelper<winrt::IconElement>::BoxedDefaultValue(),
                 winrt::PropertyChangedCallback(&OnIconPropertyChanged));
     }
-    if (!s_IsClosableProperty)
+    if (!s_IsCloseableProperty)
     {
-        s_IsClosableProperty =
+        s_IsCloseableProperty =
             InitializeDependencyProperty(
-                L"IsClosable",
+                L"IsCloseable",
                 winrt::name_of<bool>(),
                 winrt::name_of<winrt::TabViewItem>(),
                 false /* isAttached */,
                 ValueHelper<bool>::BoxValueIfNecessary(true),
-                winrt::PropertyChangedCallback(&OnIsClosablePropertyChanged));
+                winrt::PropertyChangedCallback(&OnIsCloseablePropertyChanged));
     }
 }
 
@@ -71,7 +71,7 @@ void TabViewItemProperties::ClearProperties()
     s_HeaderProperty = nullptr;
     s_HeaderTemplateProperty = nullptr;
     s_IconProperty = nullptr;
-    s_IsClosableProperty = nullptr;
+    s_IsCloseableProperty = nullptr;
 }
 
 void TabViewItemProperties::OnHeaderPropertyChanged(
@@ -98,7 +98,7 @@ void TabViewItemProperties::OnIconPropertyChanged(
     winrt::get_self<TabViewItem>(owner)->OnPropertyChanged(args);
 }
 
-void TabViewItemProperties::OnIsClosablePropertyChanged(
+void TabViewItemProperties::OnIsCloseablePropertyChanged(
     winrt::DependencyObject const& sender,
     winrt::DependencyPropertyChangedEventArgs const& args)
 {
@@ -136,12 +136,12 @@ winrt::IconElement TabViewItemProperties::Icon()
     return ValueHelper<winrt::IconElement>::CastOrUnbox(static_cast<TabViewItem*>(this)->GetValue(s_IconProperty));
 }
 
-void TabViewItemProperties::IsClosable(bool value)
+void TabViewItemProperties::IsCloseable(bool value)
 {
-    static_cast<TabViewItem*>(this)->SetValue(s_IsClosableProperty, ValueHelper<bool>::BoxValueIfNecessary(value));
+    static_cast<TabViewItem*>(this)->SetValue(s_IsCloseableProperty, ValueHelper<bool>::BoxValueIfNecessary(value));
 }
 
-bool TabViewItemProperties::IsClosable()
+bool TabViewItemProperties::IsCloseable()
 {
-    return ValueHelper<bool>::CastOrUnbox(static_cast<TabViewItem*>(this)->GetValue(s_IsClosableProperty));
+    return ValueHelper<bool>::CastOrUnbox(static_cast<TabViewItem*>(this)->GetValue(s_IsCloseableProperty));
 }

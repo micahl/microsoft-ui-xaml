@@ -60,10 +60,10 @@ unsealed runtimeclass TabViewItem : Windows.UI.Xaml.Controls.ListViewItem
     Windows.UI.Xaml.Controls.IconElement Icon{ get; set; };
 
     [MUX_DEFAULT_VALUE("true")]
-    Boolean IsClosable{ get; set; };
+    Boolean IsCloseable{ get; set; };
 
     static Windows.UI.Xaml.DependencyProperty HeaderProperty{ get; };
     static Windows.UI.Xaml.DependencyProperty HeaderTemplateProperty{ get; };
     static Windows.UI.Xaml.DependencyProperty IconProperty{ get; };
-    static Windows.UI.Xaml.DependencyProperty IsClosableProperty{ get; };
+    static Windows.UI.Xaml.DependencyProperty IsCloseableProperty{ get; };
 }
