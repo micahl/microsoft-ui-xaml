@@ -72,11 +72,51 @@ void TabView::OnSizeChanged(const winrt::IInspectable& sender, const winrt::Size
 
 void TabView::OnItemsChanged(winrt::IInspectable const& item)
 {
+    if (auto args = item.as< winrt::IVectorChangedEventArgs>())
+    {
+        if (args.CollectionChange() == winrt::CollectionChange::ItemRemoved && Items().Size() > 0)
+        {
+            if (SelectedIndex() == (int32_t)args.Index())
+            {
+                int index = (int)args.Index();
+                if (index >= (int)Items().Size())
+                {
+                    index = (int)Items().Size() - 1;
+                }
+
+                // ### the item could be disabled, though, you probably need to iterate a bit.
+                // ### why this no work SelectedItem(Items().GetAt(index));
+
+                m_isTabClosing = true;
+                m_indexToSelect = index;
+
+                /* this didn't help:
+                auto container = ContainerFromItem(Items().GetAt(index));
+                if (auto lvi = container.as<winrt::ListViewItem>())
+                {
+                    lvi.IsSelected(true);
+                }*/
+            }
+        }
+    }
+
     UpdateTabWidths();
+
+    __super::OnItemsChanged(item);
 }
 
 void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt::SelectionChangedEventArgs& args)
 {
+    WCHAR strOut[1024];
+    StringCchPrintf(strOut, ARRAYSIZE(strOut), L"OnSelectionChanged: selected index %d\n", SelectedIndex());
+    OutputDebugString(strOut);
+
+    if (m_isTabClosing)
+    {
+        m_isTabClosing = false;
+        SelectedItem(Items().GetAt(m_indexToSelect));
+    }
+
     if (auto tabContentPresenter = m_tabContentPresenter.get())
     {
         if (!SelectedItem())

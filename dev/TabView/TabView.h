@@ -54,6 +54,9 @@ private:
 
     void UpdateTabWidths();
 
+    bool m_isTabClosing{ false };
+    int m_indexToSelect{ 0 };
+
     tracker_ref<winrt::ContentPresenter> m_tabContentPresenter{ this };
     tracker_ref<winrt::FxScrollViewer> m_scrollViewer{ this };
     tracker_ref<winrt::RepeatButton> m_scrollDecreaseButton{ this };
