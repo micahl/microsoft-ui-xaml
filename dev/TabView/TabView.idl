@@ -1,4 +1,4 @@
-﻿[WUXC_VERSION_RS5]
+﻿[WUXC_VERSION_PREVIEW]
 [webhosthidden]
 enum TabViewWidthMode
 {
@@ -6,7 +6,7 @@ enum TabViewWidthMode
     Fixed = 1,
 };
 
-[WUXC_VERSION_RS5]
+[WUXC_VERSION_PREVIEW]
 [webhosthidden]
 runtimeclass TabViewTabClosingEventArgs
 {
@@ -15,7 +15,7 @@ runtimeclass TabViewTabClosingEventArgs
     Boolean Cancel { get; set; };
 }
 
-[WUXC_VERSION_RS5]
+[WUXC_VERSION_PREVIEW]
 [webhosthidden]
 [MUX_PROPERTY_CHANGED_CALLBACK(TRUE)]
 [MUX_PROPERTY_CHANGED_CALLBACK_METHODNAME("OnPropertyChanged")]
@@ -45,7 +45,7 @@ unsealed runtimeclass TabView : Windows.UI.Xaml.Controls.ListView
     static Windows.UI.Xaml.DependencyProperty RightCustomContentTemplateProperty{ get; };
 }
 
-[WUXC_VERSION_RS5]
+[WUXC_VERSION_PREVIEW]
 [webhosthidden]
 [MUX_PROPERTY_CHANGED_CALLBACK(TRUE)]
 [MUX_PROPERTY_CHANGED_CALLBACK_METHODNAME("OnPropertyChanged")]
