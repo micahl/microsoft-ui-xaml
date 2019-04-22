@@ -14,6 +14,8 @@ TabViewItem::TabViewItem()
     __RP_Marker_ClassById(RuntimeProfiler::ProfId_TabViewItem);
 
     SetDefaultStyleKey(this);
+
+    Loaded({ this, &TabViewItem::OnLoaded });
 }
 
 void TabViewItem::OnApplyTemplate()
@@ -26,10 +28,6 @@ void TabViewItem::OnApplyTemplate()
         m_closeButtonClickRevoker = closeButton.Click(winrt::auto_revoke, { this, &TabViewItem::OnCloseButtonClick });
     }
 
-    //### do I need a revoker when listening to my own event....??
-    m_loadedRevoker = Loaded(winrt::auto_revoke, { this, &TabViewItem::OnLoaded });
-
-    //### actually pretty sure I don't need to do this -- can't I just do this from PropertyChanged
     m_IsSelectedChangedRevoker = RegisterPropertyChanged(*this, winrt::SelectorItem::IsSelectedProperty(), { this, &TabViewItem::OnCloseButtonPropertyChanged });
 
     if (auto tabView = SharedHelpers::GetAncestorOfType<winrt::TabView>(winrt::VisualTreeHelper::GetParent(*this)))
@@ -69,7 +67,6 @@ void TabViewItem::OnPropertyChanged(const winrt::DependencyPropertyChangedEventA
 
 void TabViewItem::OnCloseButtonClick(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
 {
-    // ### somehow pass up "close me please" message?
     if (auto tabView = SharedHelpers::GetAncestorOfType<winrt::TabView>(winrt::VisualTreeHelper::GetParent(*this)))
     {
         auto internalTabView = winrt::get_self<TabView>(tabView);

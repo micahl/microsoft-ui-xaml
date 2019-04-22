@@ -9,14 +9,22 @@
 #include "ResourceAccessor.h"
 #include "SharedHelpers.h"
 
-static constexpr double c_tabMaximumWidth = 200.0;
 static constexpr double c_tabMinimumWidth = 48.0;
+static constexpr double c_tabMaximumWidth = 200.0;
+
+static constexpr wstring_view c_tabViewItemMinWidthName{ L"TabViewItemMinWidth"sv };
+static constexpr wstring_view c_tabViewItemMaxWidthName{ L"TabViewItemMaxWidth"sv };
+
+static constexpr double c_scrollAmount = 50.0;
 
 TabView::TabView()
 {
     __RP_Marker_ClassById(RuntimeProfiler::ProfId_TabView);
 
     SetDefaultStyleKey(this);
+
+    SelectionChanged({ this, &TabView::OnSelectionChanged });
+    SizeChanged({ this, &TabView::OnSizeChanged });
 }
 
 void TabView::OnApplyTemplate()
@@ -25,11 +33,10 @@ void TabView::OnApplyTemplate()
 
     m_tabContentPresenter.set(GetTemplateChildT<winrt::ContentPresenter>(L"TabContentPresenter", controlProtected));
     m_scrollViewer.set(GetTemplateChildT<winrt::FxScrollViewer>(L"ScrollViewer", controlProtected));
-
-    //### do I need a revoker when listening to my own event....??
-    m_loadedRevoker = Loaded(winrt::auto_revoke, { this, &TabView::OnLoaded });
-    m_selectionChangedRevoker = SelectionChanged(winrt::auto_revoke, { this, &TabView::OnSelectionChanged });
-    m_sizeChangedRevoker = SizeChanged(winrt::auto_revoke, { this, &TabView::OnSizeChanged });
+    if (auto scrollViewer = m_scrollViewer.get())
+    {
+        m_scrollViewerLoadedRevoker = scrollViewer.Loaded(winrt::auto_revoke, { this, &TabView::OnScrollViewerLoaded });
+    }
 }
 
 void TabView::OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs& args)
@@ -42,11 +49,8 @@ void TabView::OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs&
     }
 }
 
-void TabView::OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
+void TabView::OnScrollViewerLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
 {
-    winrt::IControlProtected controlProtected{ *this };
-
-    // ### yeah probably need to do this on scrollviewer load, not this on loaded, anyway.
     if (auto scrollViewer = m_scrollViewer.get())
     {
         m_scrollDecreaseButton.set(SharedHelpers::FindInVisualTreeByName(scrollViewer, L"ScrollDecreaseButton").as<winrt::RepeatButton>());
@@ -59,6 +63,14 @@ void TabView::OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEve
         if (auto increaseButton = m_scrollIncreaseButton.get())
         {
             m_scrollIncreaseClickRevoker = increaseButton.Click(winrt::auto_revoke, { this, &TabView::OnScrollIncreaseClick });
+        }
+
+        if (SharedHelpers::IsRS2OrHigher())
+        {
+            if (auto scrollContentPresenter = SharedHelpers::FindInVisualTreeByName(scrollViewer, L"ScrollContentPresenter").as<winrt::ScrollContentPresenter>())
+            {
+                scrollContentPresenter.TabFocusNavigation(winrt::KeyboardNavigationMode::Once);
+            }
         }
     }
 
@@ -78,24 +90,32 @@ void TabView::OnItemsChanged(winrt::IInspectable const& item)
         {
             if (SelectedIndex() == (int32_t)args.Index())
             {
-                int index = (int)args.Index();
-                if (index >= (int)Items().Size())
+                // Find the closest tab to select instead.
+                int startIndex = (int)args.Index();
+                if (startIndex >= (int)Items().Size())
                 {
-                    index = (int)Items().Size() - 1;
+                    startIndex = (int)Items().Size() - 1;
                 }
+                int index = startIndex;
 
-                // ### the item could be disabled, though, you probably need to iterate a bit.
-                // ### why this no work SelectedItem(Items().GetAt(index));
-
-                m_isTabClosing = true;
-                m_indexToSelect = index;
-
-                /* this didn't help:
-                auto container = ContainerFromItem(Items().GetAt(index));
-                if (auto lvi = container.as<winrt::ListViewItem>())
+                do
                 {
-                    lvi.IsSelected(true);
-                }*/
+                    auto nextItem = ContainerFromIndex(index).as<winrt::ListViewItem>();
+
+                    if (nextItem && nextItem.IsEnabled() && nextItem.Visibility() == winrt::Visibility::Visible)
+                    {
+                        // We need to wait until OnSelectionChanged fires to change the selection, otherwise it will get lost.
+                        m_isTabClosing = true;
+                        m_indexToSelect = index;
+                    }
+
+                    // try the next item
+                    index++;
+                    if (index >= (int)Items().Size())
+                    {
+                        index = 0;
+                    }
+                } while (index != startIndex);
             }
         }
     }
@@ -107,10 +127,6 @@ void TabView::OnItemsChanged(winrt::IInspectable const& item)
 
 void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt::SelectionChangedEventArgs& args)
 {
-    WCHAR strOut[1024];
-    StringCchPrintf(strOut, ARRAYSIZE(strOut), L"OnSelectionChanged: selected index %d\n", SelectedIndex());
-    OutputDebugString(strOut);
-
     if (m_isTabClosing)
     {
         m_isTabClosing = false;
@@ -129,11 +145,8 @@ void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt:
             auto container = ContainerFromItem(SelectedItem()).as<winrt::ListViewItem>();
             if (container)
             {
-                //if (ContainerFromItem(SelectedItem) is TabViewItem container)
-                //{
                 tabContentPresenter.Content(container.Content());
                 tabContentPresenter.ContentTemplate(container.ContentTemplate());
-                //}
             }
         }
     }
@@ -141,7 +154,6 @@ void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt:
 
 void TabView::CloseTab(winrt::TabViewItem container)
 {
-    // ### going to want to notify the owner I guess and give them a chance to say no, but for now....
     if (auto item = ItemFromContainer(container))
     {
         uint32_t index = 0;
@@ -153,12 +165,6 @@ void TabView::CloseTab(winrt::TabViewItem container)
 
             if (!args->Cancel())
             {
-                if (SelectedIndex() == (int32_t)index)
-                {
-                    // Select a new item.... hey, why doesn't the control seem to actually do that?
-
-                }
-
                 Items().RemoveAt(index);
             }
         }
@@ -169,7 +175,7 @@ void TabView::OnScrollDecreaseClick(const winrt::IInspectable& sender, const win
 {
     if (auto scrollViewer = m_scrollViewer.get())
     {
-        scrollViewer.ChangeView(std::max(0.0, scrollViewer.HorizontalOffset() - 50.0), nullptr, nullptr); //### magic numbers
+        scrollViewer.ChangeView(std::max(0.0, scrollViewer.HorizontalOffset() - c_scrollAmount), nullptr, nullptr);
     }
 }
 
@@ -177,13 +183,12 @@ void TabView::OnScrollIncreaseClick(const winrt::IInspectable& sender, const win
 {
     if (auto scrollViewer = m_scrollViewer.get())
     {
-        scrollViewer.ChangeView(std::min(scrollViewer.ScrollableWidth(), scrollViewer.HorizontalOffset() + 50.0), nullptr, nullptr);
+        scrollViewer.ChangeView(std::min(scrollViewer.ScrollableWidth(), scrollViewer.HorizontalOffset() + c_scrollAmount), nullptr, nullptr);
     }
 }
 
 void TabView::UpdateTabWidths()
 {
-    // ### also call this on size changed
     if (TabWidthMode() == winrt::TabViewWidthMode::SizeToContent)
     {
         for (int i = 0; i < (int)(Items().Size()); i++)
@@ -197,41 +202,20 @@ void TabView::UpdateTabWidths()
     }
     else
     {
-        //### need function for this -- probably somewhere in common
-        double maxTabWidth = c_tabMaximumWidth;
-        auto resourceName = box_value(L"TabViewItemMaxWidth");
-        if (winrt::Application::Current().Resources().HasKey(resourceName))
-        {
-            if (auto lookup = winrt::Application::Current().Resources().Lookup(resourceName))
-            {
-                maxTabWidth = unbox_value<double>(lookup);
-            }
-        }
-
-        double minTabWidth = c_tabMinimumWidth;
-        resourceName = box_value(L"TabViewItemMinWidth");
-        if (winrt::Application::Current().Resources().HasKey(resourceName))
-        {
-            if (auto lookup = winrt::Application::Current().Resources().Lookup(resourceName))
-            {
-                minTabWidth = unbox_value<double>(lookup);
-            }
-        }
+        double minTabWidth = unbox_value<double>(SharedHelpers::FindResource(c_tabViewItemMinWidthName, winrt::Application::Current().Resources(), box_value(c_tabMinimumWidth)));
+        double maxTabWidth = unbox_value<double>(SharedHelpers::FindResource(c_tabViewItemMaxWidthName, winrt::Application::Current().Resources(), box_value(c_tabMaximumWidth)));
 
         double tabWidth = maxTabWidth;
         if (auto scrollViewer = m_scrollViewer.get())
         {
             double padding = Padding().Left + Padding().Right;
-
-            // ### probably some rounding error here....?
-            double tabWidthForScroller = (scrollViewer.ActualWidth() - padding) / (double)(Items().Size()); //### ExtentWidth() didn't work??
+            double tabWidthForScroller = (scrollViewer.ActualWidth() - padding) / (double)(Items().Size());
             tabWidth = std::min(std::max(tabWidthForScroller, minTabWidth), maxTabWidth);
 
             auto decreaseButton = m_scrollDecreaseButton.get();
             auto increaseButton = m_scrollIncreaseButton.get();
             if (decreaseButton && increaseButton)
             {
-                // ### maybe this is right, maybe there's something else to check...
                 if (tabWidthForScroller < tabWidth)
                 {
                     decreaseButton.Visibility(winrt::Visibility::Visible);

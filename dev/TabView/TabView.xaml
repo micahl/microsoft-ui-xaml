@@ -110,7 +110,6 @@
                                                             <ScrollContentPresenter x:Name="ScrollContentPresenter"
                                                                 Grid.Column="1"
                                                                 Padding="{TemplateBinding Padding}" />
-                                                                <!-- ### TabFocusNavigation="Once" -->
 
                                                             <RepeatButton x:Name="ScrollIncreaseButton"
                                                                 Grid.Column="2"

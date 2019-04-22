@@ -46,7 +46,7 @@ public:
     void OnItemsChanged(winrt::IInspectable const& item);
 
 private:
-    void OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args);
+    void OnScrollViewerLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args);
     void OnSelectionChanged(const winrt::IInspectable& sender, const winrt::SelectionChangedEventArgs& args);
     void OnScrollDecreaseClick(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args);
     void OnScrollIncreaseClick(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args);
@@ -62,9 +62,7 @@ private:
     tracker_ref<winrt::RepeatButton> m_scrollDecreaseButton{ this };
     tracker_ref<winrt::RepeatButton> m_scrollIncreaseButton{ this };
 
-    winrt::ListViewBase::Loaded_revoker m_loadedRevoker{};
-    winrt::ListViewBase::SizeChanged_revoker m_sizeChangedRevoker{};
-    winrt::ListViewBase::SelectionChanged_revoker m_selectionChangedRevoker{};
+    winrt::ScrollViewer::Loaded_revoker m_scrollViewerLoadedRevoker{};
 
     winrt::RepeatButton::Click_revoker m_scrollDecreaseClickRevoker{};
     winrt::RepeatButton::Click_revoker m_scrollIncreaseClickRevoker{};

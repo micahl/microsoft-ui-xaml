@@ -28,7 +28,6 @@ public:
 
     void UpdateCloseButton();
 
-    winrt::ListViewItem::Loaded_revoker m_loadedRevoker{};
     PropertyChanged_revoker m_IsSelectedChangedRevoker{};
     PropertyChanged_revoker m_CanCloseTabsChangedRevoker{};
     winrt::ButtonBase::Click_revoker m_closeButtonClickRevoker{};
