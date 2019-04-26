@@ -38,6 +38,9 @@ public:
     // IFrameworkElement
     void OnApplyTemplate();
 
+    // IUIElement
+    virtual winrt::AutomationPeer OnCreateAutomationPeer();
+
     void OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs& args);
 
     void CloseTab(winrt::TabViewItem item);

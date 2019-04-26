@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "common.h"
 #include "TabView.h"
+#include "TabViewAutomationPeer.h"
 #include "DoubleUtil.h"
 #include "RuntimeProfiler.h"
 #include "ResourceAccessor.h"
@@ -48,6 +49,11 @@ void TabView::OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs&
     {
         UpdateTabWidths();
     }
+}
+
+winrt::AutomationPeer TabView::OnCreateAutomationPeer()
+{
+    return winrt::make<TabViewAutomationPeer>(*this);
 }
 
 void TabView::OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)

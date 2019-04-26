@@ -51,12 +51,6 @@ namespace Windows.UI.Xaml.Tests.MUXControls.InteractionTests
         }
 
         [TestMethod]
-        public void BasicTest()
-        {
-            Log.Comment("TabView Basic Test");
-        }
-
-        [TestMethod]
         public void SelectionTest()
         {
             using (var setup = new TestSetupHelper("TabView Tests"))

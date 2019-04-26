@@ -1,4 +1,4 @@
-#define WUXC_VERSION_RS3_CONTRACT  5
+﻿#define WUXC_VERSION_RS3_CONTRACT  5
 #define WUXC_VERSION_RS4_CONTRACT  6
 #define WUXC_VERSION_RS5_CONTRACT  7
 #define WUXC_VERSION_19H1_CONTRACT 8
@@ -333,6 +333,7 @@ namespace MU_XAP_NAMESPACE
 #include <SplitButton\SplitButtonAutomationPeer.idl>
 #include <DropDownButton\DropDownButtonAutomationPeer.idl>
 #include <Scroller\ScrollerAutomationPeer.idl>
+#include <TabView\TabViewAutomationPeer.idl>
 #endif
 }
 

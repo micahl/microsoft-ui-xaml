@@ -16,12 +16,14 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)TabView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TabViewItem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TabViewAutomationPeer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Generated\TabView.properties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Generated\TabViewItem.properties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TabView.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TabViewItem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TabViewAutomationPeer.cpp" />
   </ItemGroup>
   <ItemGroup Condition="$(BuildLeanMuxForTheStoreApp) != 'true'">
     <Page Include="$(MSBuildThisFileDirectory)TabView.xaml">
@@ -35,5 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)TabView.idl" />
+    <None Include="$(MSBuildThisFileDirectory)TabViewAutomationPeer.idl" />
   </ItemGroup>
 </Project>
