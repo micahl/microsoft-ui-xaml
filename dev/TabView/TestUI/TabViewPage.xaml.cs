@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Markup;
 using Windows.UI;
 using System.Windows.Input;
+using Windows.UI.Xaml.Automation;
 
 #if !BUILD_WINDOWS
 using TabView = Microsoft.UI.Xaml.Controls.TabView;
@@ -50,7 +51,8 @@ namespace MUXControlsTestApp
                 TabViewItem item = new TabViewItem();
                 item.Icon = new SymbolIcon(Symbol.Calendar);
                 item.Header = "New Tab " + _newTabNumber;
-                item.Content = "Content " + _newTabNumber;
+                item.Content = item.Header;
+                item.SetValue(AutomationProperties.NameProperty, item.Header);
 
                 Tabs.Items.Add(item);
 

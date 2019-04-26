@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
@@ -33,7 +33,7 @@ using Microsoft.Windows.Apps.Test.Foundation.Waiters;
 namespace Windows.UI.Xaml.Tests.MUXControls.InteractionTests
 {
     [TestClass]
-    class TabViewTests
+    public class TabViewTests
     {
         [ClassInitialize]
         [TestProperty("RunAs", "User")]
@@ -54,6 +54,189 @@ namespace Windows.UI.Xaml.Tests.MUXControls.InteractionTests
         public void BasicTest()
         {
             Log.Comment("TabView Basic Test");
+        }
+
+        [TestMethod]
+        public void SelectionTest()
+        {
+            using (var setup = new TestSetupHelper("TabView Tests"))
+            {
+                Log.Comment("Verify content is displayed for initially selected tab.");
+                UIObject tabContent = FindElement.ByName("FirstTabContent");
+                Verify.IsNotNull(tabContent);
+
+                Log.Comment("Changing selection.");
+                UIObject lastTab = FindElement.ByName("LastTab");
+                lastTab.Click();
+                Wait.ForIdle();
+
+                Log.Comment("Verify content is displayed for newly selected tab.");
+                tabContent = FindElement.ByName("LastTabContent");
+                Verify.IsNotNull(tabContent);
+            }
+        }
+
+        [TestMethod]
+        public void AddRemoveTest()
+        {
+            using (var setup = new TestSetupHelper("TabView Tests"))
+            {
+                Log.Comment("Adding tab.");
+                Button addTabButton = FindElement.ByName<Button>("AddTabButton");
+                addTabButton.Click();
+                Wait.ForIdle();
+
+                ElementCache.Refresh();
+                UIObject newTab = FindElement.ByName("New Tab 1");
+                Verify.IsNotNull(newTab);
+
+                Log.Comment("Removing tab.");
+                Button removeTabButton = FindElement.ByName<Button>("RemoveTabButton");
+                removeTabButton.Click();
+                Wait.ForIdle();
+
+                ElementCache.Refresh();
+                newTab = FindElement.ByName("New Tab 1");
+                Verify.IsNull(newTab);
+            }
+        }
+
+        [TestMethod]
+        public void TabSizeTest()
+        {
+            using (var setup = new TestSetupHelper("TabView Tests"))
+            {
+                UIObject smallerTab = FindElement.ByName("FirstTab");
+                UIObject largerTab = FindElement.ByName("LongHeaderTab");
+
+                Log.Comment("Fixed size tabs should all be the same size.");
+                Verify.AreEqual(smallerTab.BoundingRectangle.Width, largerTab.BoundingRectangle.Width);
+
+                Log.Comment("Changing tab width mode to SizeToContent.");
+                ComboBox tabWidthComboBox = FindElement.ByName<ComboBox>("TabWidthComboBox");
+                tabWidthComboBox.SelectItemByName("SizeToContent");
+                Wait.ForIdle();
+
+                Log.Comment("Tab with larger content should be wider.");
+                Verify.IsGreaterThan(largerTab.BoundingRectangle.Width, smallerTab.BoundingRectangle.Width);
+            }
+        }
+
+        [TestMethod]
+        public void CloseSelectionTest()
+        {
+            using (var setup = new TestSetupHelper("TabView Tests"))
+            {
+                UIObject firstTab = FindElement.ByName("FirstTab");
+                Button closeButton = FindCloseButton(firstTab);
+                Verify.IsNotNull(closeButton);
+
+                TextBlock selectedIndexTextBlock = FindElement.ByName<TextBlock>("SelectedIndexTextBlock");
+                Verify.AreEqual(selectedIndexTextBlock.DocumentText, "0");
+
+                Log.Comment("When the selected tab is closed, selection should move to the next one.");
+                closeButton.Click();
+                Wait.ForIdle();
+                Verify.AreEqual(selectedIndexTextBlock.DocumentText, "0");
+
+                Log.Comment("Select last tab.");
+                UIObject lastTab = FindElement.ByName("LastTab");
+                lastTab.Click();
+                Wait.ForIdle();
+                Verify.AreEqual(selectedIndexTextBlock.DocumentText, "3");
+
+                Log.Comment("When the selected tab is last and is closed, selection should move to the previous item.");
+                closeButton = FindCloseButton(lastTab);
+                Verify.IsNotNull(closeButton);
+                closeButton.Click();
+                Wait.ForIdle();
+                Verify.AreEqual(selectedIndexTextBlock.DocumentText, "2");
+            }
+        }
+
+        [TestMethod]
+        public void IsCloseableTest()
+        {
+            using (var setup = new TestSetupHelper("TabView Tests"))
+            {
+                UIObject firstTab = FindElement.ByName("FirstTab");
+                Button closeButton = FindCloseButton(firstTab);
+                Verify.IsNotNull(closeButton);
+
+                Log.Comment("Setting IsCloseable=false on the first tab.");
+                CheckBox isCloseableCheckBox = FindElement.ByName<CheckBox>("IsCloseableCheckBox");
+                isCloseableCheckBox.Uncheck();
+                Wait.ForIdle();
+
+                ElementCache.Refresh();
+                closeButton = FindCloseButton(firstTab);
+                Verify.IsNull(closeButton);
+
+                Log.Comment("Setting IsCloseable=true on the first tab.");
+                isCloseableCheckBox.Check();
+                Wait.ForIdle();
+
+                ElementCache.Refresh();
+                closeButton = FindCloseButton(firstTab);
+                Verify.IsNotNull(closeButton);
+
+                Log.Comment("Setting CanCloseTabs=false on the TabView.");
+                CheckBox canCloseCheckBox = FindElement.ByName<CheckBox>("CanCloseCheckBox");
+                canCloseCheckBox.Uncheck();
+                Wait.ForIdle();
+
+                ElementCache.Refresh();
+                closeButton = FindCloseButton(firstTab);
+                Verify.IsNull(closeButton);
+            }
+        }
+
+        [TestMethod]
+        public void CancelTabClosingTest()
+        {
+            using (var setup = new TestSetupHelper("TabView Tests"))
+            {
+                UIObject firstTab = FindElement.ByName("FirstTab");
+                Button closeButton = FindCloseButton(firstTab);
+                Verify.IsNotNull(closeButton);
+
+                CheckBox cancelCloseCheckBox = FindElement.ByName<CheckBox>("CancelCloseCheckBox");
+                cancelCloseCheckBox.Check();
+                Wait.ForIdle();
+
+                Log.Comment("Clicking close button should not close tab if app returns cancel = true.");
+                closeButton.Click();
+                Wait.ForIdle();
+
+                ElementCache.Refresh();
+                firstTab = TryFindElement.ByName("FirstTab");
+                Verify.IsNotNull(firstTab);
+
+                cancelCloseCheckBox.Uncheck();
+                Wait.ForIdle();
+
+                Log.Comment("Clicking close button should close tab if app doesn't handle TabClosing event.");
+                closeButton.Click();
+                Wait.ForIdle();
+
+                ElementCache.Refresh();
+                firstTab = TryFindElement.ByName("FirstTab");
+                Verify.IsNull(firstTab);
+            }
+        }
+
+        Button FindCloseButton(UIObject tabItem)
+        {
+            foreach (UIObject elem in tabItem.Children)
+            {
+                if (elem.ClassName.Equals("Button"))
+                {
+                    Log.Comment("Found close button for object " + tabItem.Name);
+                    return new Button(elem);
+                }
+            }
+            Log.Comment("Did not find close button for object " + tabItem.Name);
+            return null;
         }
     }
 }

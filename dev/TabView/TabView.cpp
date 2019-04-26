@@ -23,6 +23,7 @@ TabView::TabView()
 
     SetDefaultStyleKey(this);
 
+    Loaded({ this, &TabView::OnLoaded });
     SelectionChanged({ this, &TabView::OnSelectionChanged });
     SizeChanged({ this, &TabView::OnSizeChanged });
 }
@@ -47,6 +48,11 @@ void TabView::OnPropertyChanged(const winrt::DependencyPropertyChangedEventArgs&
     {
         UpdateTabWidths();
     }
+}
+
+void TabView::OnLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
+{
+    UpdateTabContent();
 }
 
 void TabView::OnScrollViewerLoaded(const winrt::IInspectable& sender, const winrt::RoutedEventArgs& args)
@@ -107,6 +113,7 @@ void TabView::OnItemsChanged(winrt::IInspectable const& item)
                         // We need to wait until OnSelectionChanged fires to change the selection, otherwise it will get lost.
                         m_isTabClosing = true;
                         m_indexToSelect = index;
+                        break;
                     }
 
                     // try the next item
@@ -133,6 +140,11 @@ void TabView::OnSelectionChanged(const winrt::IInspectable& sender, const winrt:
         SelectedItem(Items().GetAt(m_indexToSelect));
     }
 
+    UpdateTabContent();
+}
+
+void TabView::UpdateTabContent()
+{
     if (auto tabContentPresenter = m_tabContentPresenter.get())
     {
         if (!SelectedItem())

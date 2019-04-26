@@ -28,8 +28,8 @@
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                     <TextBlock VerticalAlignment="Center">Tab Width:</TextBlock>
                     <ComboBox x:Name="TabWidthComboBox" AutomationProperties.Name="TabWidthComboBox" Margin="4,0,0,0" SelectedIndex="1" SelectionChanged="TabWidthComboBox_SelectionChanged">
-                        <x:String>SizeToContent</x:String>
-                        <x:String>Fixed</x:String>
+                        <ComboBoxItem Content="SizeToContent"/>
+                        <ComboBoxItem Content="Fixed"/>
                     </ComboBox>
                 </StackPanel>
 
@@ -44,10 +44,10 @@
                 <controls:TabView.Items>
 
                     <controls:TabViewItem x:Name="FirstTab" AutomationProperties.Name="FirstTab" Icon="Home" Header="Home">
-                        <TextBlock Padding="16">Home text</TextBlock>
+                        <Button x:Name="FirstTabContent" AutomationProperties.Name="FirstTabContent" Padding="16">Home text</Button>
                     </controls:TabViewItem>
 
-                    <controls:TabViewItem Icon="Shop" Header="Shop">
+                    <controls:TabViewItem x:Name="SecondTab" AutomationProperties.Name="SecondTab" Icon="Shop" Header="Shop">
                         <TextBlock Padding="16">Shop text</TextBlock>
                     </controls:TabViewItem>
 
@@ -57,6 +57,10 @@
 
                     <controls:TabViewItem x:Name="NotCloseableTab" AutomationProperties.Name="NotCloseableTab" Icon="Video" Header="Video" IsCloseable="False">
                         <TextBlock Padding="16">This tab can't be closed.</TextBlock>
+                    </controls:TabViewItem>
+
+                    <controls:TabViewItem x:Name="LastTab" AutomationProperties.Name="LastTab" Icon="Contact" Header="Contact">
+                        <TextBlock x:Name="LastTabContent" AutomationProperties.Name="LastTabContent" Padding="16">Contact text</TextBlock>
                     </controls:TabViewItem>
 
                 </controls:TabView.Items>
