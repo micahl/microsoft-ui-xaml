@@ -16,6 +16,7 @@ static constexpr double c_tabMaximumWidth = 200.0;
 static constexpr wstring_view c_tabViewItemMinWidthName{ L"TabViewItemMinWidth"sv };
 static constexpr wstring_view c_tabViewItemMaxWidthName{ L"TabViewItemMaxWidth"sv };
 
+// TODO: what is the right number and should this be customizable?
 static constexpr double c_scrollAmount = 50.0;
 
 TabView::TabView()
