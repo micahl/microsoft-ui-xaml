@@ -36,7 +36,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)TabView.idl" />
-    <None Include="$(MSBuildThisFileDirectory)TabViewAutomationPeer.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)TabView.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)TabViewAutomationPeer.idl" />
   </ItemGroup>
 </Project>

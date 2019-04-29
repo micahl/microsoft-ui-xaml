@@ -1,4 +1,7 @@
-﻿[WUXC_VERSION_PREVIEW]
+﻿namespace MU_XC_NAMESPACE
+{
+
+[WUXC_VERSION_PREVIEW]
 [webhosthidden]
 enum TabViewWidthMode
 {
@@ -66,4 +69,6 @@ unsealed runtimeclass TabViewItem : Windows.UI.Xaml.Controls.ListViewItem
     static Windows.UI.Xaml.DependencyProperty HeaderTemplateProperty{ get; };
     static Windows.UI.Xaml.DependencyProperty IconProperty{ get; };
     static Windows.UI.Xaml.DependencyProperty IsCloseableProperty{ get; };
+}
+
 }
