@@ -62,7 +62,7 @@ Write-Verbose "Copying $inputBasePath\Themes"
 Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.UI.Xaml
 
 [xml]$sdkPropsContent = Get-Content $PSScriptRoot\..\..\sdkversion.props
-$highestSdkVersion = $sdkPropsContent.GetElementsByTagName("*").'#text' -match "10." | Sort-Object | Select-Object -Last 1
+$highestSdkVersion = ($sdkPropsContent.SelectNodes("//*[contains(local-name(), 'SDKVersion')]") | Where-Object { -not $_.ToString().Contains("Insider")} | Select-Object -Last 1).'#text'
 $sdkReferencesPath=$kitsRoot10 + "References\" + $highestSdkVersion;    
 $foundationWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.FoundationContract" -Filter "Windows.Foundation.FoundationContract.winmd" | Select-Object -ExpandProperty FullName
 $universalWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.UniversalApiContract" -Filter "Windows.Foundation.UniversalApiContract.winmd" | Select-Object -ExpandProperty FullName
@@ -96,6 +96,31 @@ $ActivatableTypes += @"
 
 Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
 
+$customPropsFile = "$PSScriptRoot\..\..\custom.props"
+Write-Verbose "Looking in $customPropsFile"
+
+if (-not (Test-Path $customPropsFile))
+{
+    Write-Error "Expected '$customPropsFile' to exist"
+    Exit 1
+}
+[xml]$customProps = (Get-Content $customPropsFile)
+$versionMajor = $customProps.GetElementsByTagName("VersionMajor").'#text'
+$versionMinor = $customProps.GetElementsByTagName("VersionMinor").'#text'
+
+Write-Verbose "CustomProps = $customProps, VersionMajor = '$versionMajor', VersionMinor = '$versionMinor'"
+
+if ((!$versionMajor) -or (!$versionMinor))
+{
+    Write-Error "Expected VersionMajor and VersionMinor tags to be in custom.props file"
+    Exit 1
+}
+
+if (-not $PackageNameSuffix)
+{
+    $PackageNameSuffix = "$($versionMajor).$($versionMinor)"
+}
+
 # Calculate the version the same as our nuget package.
 
 if ($VersionOverride)
@@ -103,28 +128,7 @@ if ($VersionOverride)
     $version = $VersionOverride
 }
 else
-{
-    $customPropsFile = "$PSScriptRoot\..\..\custom.props"
-Write-Verbose "Looking in $customPropsFile"
-
-    if (-not (Test-Path $customPropsFile))
-    {
-        Write-Error "Expected '$customPropsFile' to exist"
-        Exit 1
-    }
-    [xml]$customProps = (Get-Content $customPropsFile)
-    $versionMajor = $customProps.GetElementsByTagName("VersionMajor").'#text'
-    $versionMinor = $customProps.GetElementsByTagName("VersionMinor").'#text'
-
-Write-Verbose "CustomProps = $customProps, VersionMajor = '$versionMajor', VersionMinor = '$versionMinor'"
-
-    if ((!$versionMajor) -or (!$versionMinor))
-    {
-        Write-Error "Expected VersionMajor and VersionMinor tags to be in custom.props file"
-        Exit 1
-    }
-
-    
+{    
     $pstZone = [System.TimeZoneInfo]::FindSystemTimeZoneById("Pacific Standard Time")
     $pstTime = [System.TimeZoneInfo]::ConvertTimeFromUtc((Get-Date).ToUniversalTime(), $pstZone)
     # Split version into yyMM.dd because appx versions can't be greater than 65535

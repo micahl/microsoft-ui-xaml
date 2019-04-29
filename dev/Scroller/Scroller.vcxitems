@@ -15,9 +15,9 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Scroller.idl" />
-    <None Include="$(MSBuildThisFileDirectory)ScrollerPrimitives.idl" />
-    <None Include="$(MSBuildThisFileDirectory)ScrollerAutomationPeer.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)Scroller.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)ScrollerPrimitives.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)ScrollerAutomationPeer.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)InteractionTrackerAsyncOperation.h" />
@@ -35,6 +35,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ScrollerTrace.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScrollCompletedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScrollAnimationStartingEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SnapPointWrapper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ZoomAnimationStartingEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScrollerAnchorRequestedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScrollOptions.h" />
@@ -61,6 +62,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerSnapPoint.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScrollCompletedEventArgs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScrollAnimationStartingEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SnapPointWrapper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ZoomAnimationStartingEventArgs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerAnchorRequestedEventArgs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScrollerPrivate.cpp" />
