@@ -86,12 +86,12 @@ jobs:
 
   - template: AzurePipelinesTemplates\MUX-PopulateBuildDateAndRevision-Steps.yml
 
-  - task: powershell@2
-    inputs:
-      targetType: filePath
-      filePath: $(Build.SourcesDirectory)\tools\PublishSymbols\PublishSymbols.ps1
-      arguments: -localDirectory "$(Build.ArtifactStagingDirectory)\drop" -Verbose
-    displayName: 'Publish Symbols'
+  # - task: powershell@2
+  #   inputs:
+  #     targetType: filePath
+  #     filePath: $(Build.SourcesDirectory)\tools\PublishSymbols\PublishSymbols.ps1
+  #     arguments: -localDirectory "$(Build.ArtifactStagingDirectory)\drop" -Verbose
+  #   displayName: 'Publish Symbols'
 
   - task: PkgESCodeSign@10
     displayName: CodeSign
@@ -109,6 +109,9 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
       artifactName: 'drop'
 
+  - task: PkgESSerializeForPostBuild@10
+    displayName: 'XESSerializeForPostbuild'
+
 # Create Nuget Package
 - template: AzurePipelinesTemplates\MUX-CreateNugetPackage-Job.yml
   parameters:
@@ -122,6 +125,7 @@ jobs:
   parameters:
     buildJobName: 'BuildNugetPkgTests'
     buildArtifactName: 'NugetPkgTestsDrop'
+    runTestJobName: 'RunNugetPkgTestsInHelix'
     dependsOn: CreateNugetPackage
     pkgArtifactPath: '$(artifactDownloadPath)\drop'
 
@@ -130,6 +134,7 @@ jobs:
   parameters:
     buildJobName: 'BuildFrameworkPkgTests'
     buildArtifactName: 'FrameworkPkgTestsDrop'
+    runTestJobName: 'RunFrameworkPkgTestsInHelix'
     dependsOn: CreateNugetPackage
     pkgArtifactPath: '$(artifactDownloadPath)\drop\FrameworkPackage'
 
