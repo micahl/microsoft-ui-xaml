@@ -3,6 +3,7 @@ using Windows.UI.Xaml.Tests.MUXControls.InteractionTests.Common;
 using System;
 using System.Numerics;
 using Common;
+using System.Threading.Tasks;
 
 #if USING_TAEF
 using WEX.TestExecution;
@@ -484,7 +485,7 @@ namespace Windows.UI.Xaml.Tests.MUXControls.InteractionTests
                     ScrollBy(10);
                     UseTestWindowBounds(10, 10, 10, 10);
 
-                    elements.GetShowButton().Invoke();
+                    elements.GetShowButton().InvokeAndWait();
 
                     var message1 = GetTeachingTipDebugMessage(1);
                     Verify.IsTrue(message1.ToString().Contains("Closed"));
@@ -666,7 +667,7 @@ namespace Windows.UI.Xaml.Tests.MUXControls.InteractionTests
         {
             if(elements.GetIsOpenCheckBox().ToggleState != ToggleState.On)
             {
-                elements.GetShowButton().Invoke();
+                elements.GetShowButton().InvokeAndWait();
                 WaitForChecked(elements.GetIsOpenCheckBox());
                 WaitForChecked(elements.GetIsIdleCheckBox());
             }
@@ -1012,6 +1013,12 @@ namespace Windows.UI.Xaml.Tests.MUXControls.InteractionTests
         // the expected order.
         private ListBoxItem GetTeachingTipDebugMessage(int index)
         {
+            var count = elements.GetLstTeachingTipEvents().Items.Count;
+            if (count <= index)
+            {
+                Log.Comment($"TeachingTipEvents list only has {count} items, waiting a little bit longer to see if they show up");
+                Task.Delay(TimeSpan.FromMilliseconds(250)).Wait();
+            }
             return elements.GetLstTeachingTipEvents().Items[index];
         }
 
