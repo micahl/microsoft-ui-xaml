@@ -375,7 +375,6 @@
     <None Include="CommonHelpers.tt" />
     <None Include="CppWinRTFilterTypes.tt" />
     <T4ParameterValues Include="MetadataWinmdPaths">
-    <!-- TODO: Should this be the SDK winmd? It was before, but I'm not sure if that was correct -->
       <Value>$(OutDir)\Microsoft.winmd</Value>
     </T4ParameterValues>
   </ItemGroup>
@@ -600,7 +599,14 @@
       <Midl Include="$(ProjectMergedIdl)"/>
     </ItemGroup>
   </Target>
-  <Target Name="XamlMetadataCodeGenMUX" AfterTargets="CppWinRTMakeComponentProjection" BeforeTargets="ClCompile" Inputs="$(MetadataWinmdPaths);XamlMetadataProviderGenerated.tt;CommonHelpers.tt;WinRtType.tt" Outputs="$(OutDir)XamlMetadataProviderGenerated.cpp">
+  <Target Name="CreateReferenceWinmds" BeforeTargets="XamlMetadataCodeGenMUX">
+    <ItemGroup>
+      <T4ParameterValues Include="ReferenceWinmds">
+        <Value>@(CppWinRTPlatformWinMDReferences)</Value>
+      </T4ParameterValues>
+    </ItemGroup>
+  </Target>
+  <Target Name="XamlMetadataCodeGenMUX" AfterTargets="CppWinRTMakeComponentProjection" BeforeTargets="ClCompile" Inputs="$(OutDir)Microsoft.winmd;XamlMetadataProviderGenerated.tt;CommonHelpers.tt;WinRtType.tt" Outputs="$(OutDir)XamlMetadataProviderGenerated.cpp">
     <!-- Run XamlMetadataProviderGenerated.tt t4 template to generate XamlMetadataProviderGenerated.cpp from the winmd file -->
     <CallTarget Targets="TransformAll" />
     <ItemGroup>
