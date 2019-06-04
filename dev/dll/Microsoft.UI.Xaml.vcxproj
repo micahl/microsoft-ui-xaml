@@ -31,6 +31,9 @@
     <!-- XBF is no longer embedded to improve F5 times but we need it embedded for the Nuget package PRI file, turn it on for release builds -->
     <DisableEmbeddedXbf Condition="'$(Configuration)'=='Release'">false</DisableEmbeddedXbf>
     <AppxBundlePlatforms>x86|x64|arm|arm64</AppxBundlePlatforms>
+
+    <CppWinRTUsePrefixes>false</CppWinRTUsePrefixes>
+    <!-- <CppWinRTOptimized>true</CppWinRTOptimized> -->
   </PropertyGroup>
   <!-- <PropertyGroup Condition="'$(Use64BitLinker)' == 'true' AND '$(BuildingWithBuildExe)' != 'true'">
       <LinkToolPath>$(OSBuildToolsRoot)\vc\HostX64\$(BuildArchName)</LinkToolPath>
@@ -185,16 +188,15 @@
         $(OutDir);
       </AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>
-        $(IntermediateOutputPath)\CppWinRT\Platform;
-        $(IntermediateOutputPath)\CppWinRT\Component;
-        $(IntermediateOutputPath)\CppWinRT\Component\Automation\Peers;
-        $(IntermediateOutputPath)\CppWinRT\Component\Controls;
-        $(IntermediateOutputPath)\CppWinRT\Component\Controls\Primitives;
-        $(IntermediateOutputPath)\CppWinRT\Component\Media;
-        $(IntermediateOutputPath)\CppWinRT\Component\XamlTypeInfo;
-        $(IntermediateOutputPath)\CppWinRT\Component\Microsoft\UI\Composition\Effects;
-        $(IntermediateOutputPath)\CppWinRT\Component\Microsoft\UI\Private\Controls;
-        $(IntermediateOutputPath)\CppWinRT\Component\Microsoft\UI\Private\Media;
+        $(GeneratedFilesDir)\winrt;
+        $(GeneratedFilesDir)\Automation\Peers;
+        $(GeneratedFilesDir)\Controls;
+        $(GeneratedFilesDir)\Controls\Primitives;
+        $(GeneratedFilesDir)\Media;
+        $(GeneratedFilesDir)\XamlTypeInfo;
+        $(GeneratedFilesDir)\Microsoft\UI\Composition\Effects;
+        $(GeneratedFilesDir)\Microsoft\UI\Private\Controls;
+        $(GeneratedFilesDir)\Microsoft\UI\Private\Media;
         %(AdditionalIncludeDirectories);
         $(MiniWindowsSDKIncludePath);
       </AdditionalIncludeDirectories>
@@ -611,7 +613,7 @@
     </CreateItem>
   </Target>
   <Target Name="RunDependencyPropertyCodeGen" AfterTargets="CppWinRTMakeComponentProjection" BeforeTargets="ClCompile" Inputs="$(OutDir)Microsoft.winmd" Outputs="@(DependencyPropertyCodeGenOutputs);$(MSBuildProjectDirectory)\..\Generated\AcrylicBrush.properties.cpp">
-    <DependencyPropertyCodeGen WinMDInput="$(OutDir)Microsoft.winmd" References="@(ProjectionWinMD)" OutputDirectory="$(MSBuildProjectDirectory)\..\Generated" />
+    <DependencyPropertyCodeGen WinMDInput="$(OutDir)Microsoft.winmd" References="@(CppWinRTPlatformWinMDReferences)" OutputDirectory="$(MSBuildProjectDirectory)\..\Generated" />
   </Target>
   <Target Name="WorkAroundFastUpToDateCheckBug" AfterTargets="_GenerateProjectPriFileCore" Inputs="$(OutDir)$(TargetName).pri" Outputs="$(OutDir)$(TargetName).dll;$(OutDir)$(TargetName).winmd;$(OutDir)Microsoft.winmd" Condition="Exists('$(OutDir)$(TargetName).dll')">
     <Message Text="Touching '$(OutDir)$(TargetName).dll' because pri file changed to work around DevDiv bug https://devdiv.visualstudio.com/DevDiv/_workitems?id=297204" />
