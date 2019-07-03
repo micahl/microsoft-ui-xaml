@@ -79,6 +79,7 @@
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="TabNavigation" Value="Local" />
         <Setter Property="IsSwipeEnabled" Value="False" />
+        <Setter Property="SingleSelectionFollowsFocus" Value="False"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
         <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Enabled" />
@@ -199,13 +200,20 @@
 
     <Style TargetType="local:TabViewItem">
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="UseSystemFocusVisuals" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:TabViewItem">
 
                     <Grid
                         Background="{ThemeResource TabViewItemHeaderBackground}"
-                        Padding="{TemplateBinding Padding}">
+                        Padding="{TemplateBinding Padding}"
+                        Margin="-1,0,0,0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="LayoutRootScale" />
@@ -213,7 +221,11 @@
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Normal">
+                                    <VisualState.Setters>
+                                        <Setter Target="TabSeparator.Visibility" Value="Visible" />
+                                    </VisualState.Setters>
+                                </VisualState>
 
                                 <VisualState x:Name="PointerOver">
                                     <VisualState.Setters>
@@ -459,7 +471,16 @@
                                     </ResourceDictionary>
                                 </Button.Resources>
                             </Button>
+
                         </Grid>
+
+                        <Border x:Name="TabSeparator"
+                            Grid.Column="1"
+                            Width="1"
+                            BorderBrush="Red"
+                            BorderThickness="1"
+                            Visibility="Collapsed"
+                            Margin="0,2,0,5"/>
                     </Grid>
 
                 </ControlTemplate>

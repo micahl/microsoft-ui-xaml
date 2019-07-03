@@ -9,8 +9,8 @@
             <StaticResource x:Key="TabViewBackground"                        ResourceKey="SystemControlBackgroundBaseLowBrush" />
             <StaticResource x:Key="TabViewItemHeaderBackground"              ResourceKey="SystemControlTransparentBrush" />
             <StaticResource x:Key="TabViewItemHeaderBackgroundSelected"      ResourceKey="SystemControlBackgroundAltHighBrush" />
-            <StaticResource x:Key="TabViewItemHeaderBackgroundPointerOver"   ResourceKey="SystemControlHighlightListLowBrush" />
-            <StaticResource x:Key="TabViewItemHeaderBackgroundPressed"       ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="TabViewItemHeaderBackgroundPointerOver"   ResourceKey="SystemChromeLowColor" />
+            <StaticResource x:Key="TabViewItemHeaderBackgroundPressed"       ResourceKey="SystemChromeMediumLowColor" />
             <StaticResource x:Key="TabViewItemHeaderForeground"              ResourceKey="SystemControlForegroundBaseMediumBrush" />
             <StaticResource x:Key="TabViewItemHeaderForegroundPressed"       ResourceKey="SystemControlForegroundBaseMediumHighBrush" />
             <StaticResource x:Key="TabViewItemHeaderForegroundSelected"      ResourceKey="SystemControlForegroundBaseHighBrush" />
@@ -22,8 +22,8 @@
             <StaticResource x:Key="TabViewBackground"                        ResourceKey="SystemControlBackgroundBaseLowBrush" />
             <StaticResource x:Key="TabViewItemHeaderBackground"              ResourceKey="SystemControlTransparentBrush" />
             <StaticResource x:Key="TabViewItemHeaderBackgroundSelected"      ResourceKey="SystemControlBackgroundAltHighBrush" />
-            <StaticResource x:Key="TabViewItemHeaderBackgroundPointerOver"   ResourceKey="SystemControlHighlightListLowBrush" />
-            <StaticResource x:Key="TabViewItemHeaderBackgroundPressed"       ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="TabViewItemHeaderBackgroundPointerOver"   ResourceKey="SystemChromeLowColor" />
+            <StaticResource x:Key="TabViewItemHeaderBackgroundPressed"       ResourceKey="SystemChromeMediumLowColor" />
             <StaticResource x:Key="TabViewItemHeaderForeground"              ResourceKey="SystemControlForegroundBaseMediumBrush" />
             <StaticResource x:Key="TabViewItemHeaderForegroundPressed"       ResourceKey="SystemControlForegroundBaseMediumHighBrush" />
             <StaticResource x:Key="TabViewItemHeaderForegroundSelected"      ResourceKey="SystemControlForegroundBaseHighBrush" />
@@ -35,8 +35,8 @@
             <StaticResource x:Key="TabViewBackground"                        ResourceKey="SystemControlBackgroundBaseLowBrush" />
             <StaticResource x:Key="TabViewItemHeaderBackground"              ResourceKey="SystemControlTransparentBrush" />
             <StaticResource x:Key="TabViewItemHeaderBackgroundSelected"      ResourceKey="SystemControlBackgroundAltHighBrush" />
-            <StaticResource x:Key="TabViewItemHeaderBackgroundPointerOver"   ResourceKey="SystemControlHighlightListLowBrush" />
-            <StaticResource x:Key="TabViewItemHeaderBackgroundPressed"       ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="TabViewItemHeaderBackgroundPointerOver"   ResourceKey="SystemChromeLowColor" />
+            <StaticResource x:Key="TabViewItemHeaderBackgroundPressed"       ResourceKey="SystemChromeMediumLowColor" />
             <StaticResource x:Key="TabViewItemHeaderForeground"              ResourceKey="SystemControlForegroundBaseMediumBrush" />
             <StaticResource x:Key="TabViewItemHeaderForegroundPressed"       ResourceKey="SystemControlForegroundBaseMediumHighBrush" />
             <StaticResource x:Key="TabViewItemHeaderForegroundSelected"      ResourceKey="SystemControlForegroundBaseHighBrush" />
@@ -46,7 +46,7 @@
     </ResourceDictionary.ThemeDictionaries>
 
     <Thickness x:Key="TabViewHeaderPadding">6,6,6,0</Thickness>
-    <CornerRadius x:Key="TabViewItemCornerRadius">4,4,0,0</CornerRadius>
+    <CornerRadius x:Key="TabViewItemCornerRadius">2,2,0,0</CornerRadius>
     <Thickness x:Key="TabViewItemHeaderMargin">0</Thickness>
     <Thickness x:Key="TabViewItemHeaderPadding">12,4,12,6</Thickness>
     <Thickness x:Key="TabViewItemHeaderIconMargin">0,0,8,0</Thickness>
