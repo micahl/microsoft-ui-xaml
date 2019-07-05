@@ -125,6 +125,7 @@
     <Import Project="..\ComboBox\ComboBox.vcxitems" Label="Shared" />
     <Import Project="..\Pivot\Pivot.vcxitems" Label="Shared" />
     <Import Project="..\ScrollBar\ScrollBar.vcxitems" Label="Shared" />
+    <Import Project="..\SplitView\SplitView.vcxitems" Label="Shared" />
   </ImportGroup>
   <ItemGroup>
     <SharedPage Include="@(Page)" />
