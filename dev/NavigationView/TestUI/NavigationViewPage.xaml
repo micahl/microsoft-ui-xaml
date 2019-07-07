@@ -35,6 +35,12 @@
                 PaneOpened="NavView_PaneOpened"
                 BackRequested="NavView_BackRequested"
                 AccessKey="H">
+            <muxcontrols:NavigationView.PaneCustomContent>
+                <StackPanel>
+                    <Button x:Name="SometimesVisible" Visibility="{x:Bind NavView.IsPaneOpen, Mode=OneWay}" Content="👁" HorizontalAlignment="Center"/>
+                    <Button x:Name="AlwaysVisible" Content="😊" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </muxcontrols:NavigationView.PaneCustomContent>
             <muxcontrols:NavigationView.MenuItems>
                 <muxcontrols:NavigationViewItem x:Name="HomeItem" Content="Home" Icon="Home"/>
                 <muxcontrols:NavigationViewItem x:Name="AppsItem" Content="Apps" Icon="Shop" />
