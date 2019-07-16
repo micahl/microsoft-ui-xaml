@@ -3,6 +3,7 @@ using Microsoft.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CustomTasks
 {
@@ -33,6 +34,10 @@ namespace CustomTasks
 
         [Required]
         public string OutputDirectory { get; set; }
+
+        [Required]
+        public string TlogOutputPath { get; set; }
+
 
         [Output]
         public string[] FilesWritten
@@ -131,6 +136,38 @@ namespace CustomTasks
                 ExecuteForTaskItems(RS5Pages, "RS5");
                 ExecuteForTaskItems(N19H1Pages, "19H1");
             }
+
+            var filesRead = new List<string>();
+            filesRead.AddRange(RS1Pages.Select(item => item.ItemSpec));
+            filesRead.AddRange(RS2Pages.Select(item => item.ItemSpec));
+            filesRead.AddRange(RS3Pages.Select(item => item.ItemSpec));
+            filesRead.AddRange(RS4Pages.Select(item => item.ItemSpec));
+            filesRead.AddRange(RS5Pages.Select(item => item.ItemSpec));
+            filesRead.AddRange(N19H1Pages.Select(item => item.ItemSpec));
+
+            File.WriteAllLines(TlogOutputPath, filesRead);
+            //var fileName = @"BatchMergeXaml.read.1u.tlog";
+            //var dir = @"D:\microsoft-ui-xaml\BuildOutput\Intermediates\Microsoft.UI.Xaml\obj\";
+
+            //var filePath = Path.Combine(dir, fileName);
+            //File.WriteAllLines(filePath, new string[]
+            //{
+            //    @"D:\microsoft-ui-xaml\dev\TeachingTip\TeachingTip.xaml"
+            //});
+
+
+            //CanonicalTrackedInputFiles d = new CanonicalTrackedInputFiles
+            //    (
+            //        this /*ownerTask*/,
+            //        new[] { new TaskItem(Path.Combine(dir, fileName))} /*tlogFiles*/,
+            //        new[] { new TaskItem(@"D:\microsoft-ui-xaml\dev\TeachingTip\TeachingTip.xaml") } /*sourceFile*/,
+            //        null /*excludedInputPaths*/,
+            //        new[] { new TaskItem(Path.Combine("TestFiles", "one.obj")) } /*outputs*/,
+            //        false, /* no minimal rebuild optimization */
+            //        false /* shred composite rooting markers */
+            //    );
+            //d.SaveTlog();
+
             return !Log.HasLoggedErrors;
         }
     }
