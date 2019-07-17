@@ -12,6 +12,7 @@ using CornerRadiusFilterType = CornerRadiusFilterConverter::FilterType;
 
 static constexpr auto c_popupName = L"SuggestionsPopup"sv;
 static constexpr auto c_suggestionsListName = L"SuggestionsList"sv;
+static constexpr auto c_suggestionsListBorderName = L"ListViewBorder"sv;
 static constexpr auto c_textBoxName = L"TextBox"sv;
 static constexpr auto c_textBoxBorderName = L"BorderElement"sv;
 GlobalDependencyProperty AutoSuggestBoxHelper::s_AutoSuggestEventRevokersProperty{ nullptr };
@@ -132,6 +133,13 @@ void AutoSuggestBoxHelper::UpdateCornerRadius(const winrt::AutoSuggestBox& autoS
         if (auto listViewControl7 = suggestionsList.try_as<winrt::IControl7>())
         {
             suggestionsList.CornerRadius(popupRadius);
+        }
+        else
+        {
+            if (auto listBorder = GetTemplateChildT<winrt::Border>(c_suggestionsListBorderName, suggestionsList))
+            {
+                listBorder.CornerRadius(popupRadius);
+            }
         }
     }
 
